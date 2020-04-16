@@ -3,7 +3,11 @@
 #
 
 param (
-    [Parameter(Mandatory=$true)][string]$ip
+    [Parameter(Mandatory=$true)][string]$ip,
+    [Parameter(Mandatory=$true)][string]$product,
+    [Parameter(Mandatory=$true)][string]$version,
+    [Parameter(Mandatory=$true)][string]$login,
+    [Parameter(Mandatory=$true)][string]$password
 )
 
 $ErrorActionPreference = "Stop"
@@ -27,3 +31,15 @@ netsh interface portproxy add v4tov4 listenport=9400 listenaddress=$ip connectad
 
 # Allow IQFeed client access through firewall
 New-NetFirewallRule -Name iqfeed -DisplayName "IQFeed Port Forwarding" -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalAddress "$ip" -LocalPort 5009,9100,9200,9300,9400
+
+# Create the IQFeed service so it runs continuously
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/okinta/vultr-scripts/master/run-iqfeed.ps1" -OutFile "C:\Program Files (x86)\DTN\IQFeed\run-iqfeed.ps1"
+$params = @{
+  Name = "IQFeed"
+  BinaryPathName = "powershell C:\Program Files (x86)\DTN\IQFeed\run-iqfeed.ps1 --product $product --version $version --login $login --password $password"
+  DependsOn = "NetLogon"
+  DisplayName = "IQFeed"
+  StartupType = "Automatic"
+  Description = "Runs IQFeed client continuously."
+}
+New-Service @params

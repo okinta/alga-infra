@@ -6,7 +6,7 @@ param (
     [Parameter(Mandatory=$true)][string]$product,
     [Parameter(Mandatory=$true)][string]$version,
     [Parameter(Mandatory=$true)][string]$login,
-    [Parameter(Mandatory=$true)][string]$password,
+    [Parameter(Mandatory=$true)][string]$password
 )
 
 While ($true) {
