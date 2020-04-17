@@ -25,7 +25,7 @@ private_ip=""
 for id in $(vultr-cli server list | awk '{print $1}' | egrep '[0-9]+'); do
     main_ip=$(vultr-cli server info $id | grep "Main IP" | awk '{print $3}')
     if [ $main_ip = $external_ip ]; then
-        break
+        private_ip=$(vultr-cli server info $id | grep "Internal IP" | awk '{print $3}')
     fi
 done
 
