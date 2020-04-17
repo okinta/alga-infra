@@ -14,6 +14,8 @@ $ErrorActionPreference = "Stop"
 
 $IQFeedVersion = "6_1_0_20"
 
+[Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
+
 # Configure Vultr private networking
 netsh interface ip set address name="Ethernet 2" static $ip 255.255.0.0 0.0.0.0 1
 
@@ -37,8 +39,11 @@ Invoke-WebRequest -Uri "https://github.com/winsw/winsw/releases/download/v2.7.0/
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/okinta/vultr-scripts/master/iqfeed/iqfeed-service.xml" -OutFile "C:\Program Files (x86)\DTN\IQFeed\iqfeed-service.xml"
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/okinta/vultr-scripts/master/iqfeed/run-iqfeed.ps1" -OutFile "C:\Program Files (x86)\DTN\IQFeed\run-iqfeed.ps1"
 
-[System.Environment]::SetEnvironmentVariable("IQFeedProduct", "$product", "User")
-[System.Environment]::SetEnvironmentVariable("IQFeedProductVersion", "$version", "User")
-[System.Environment]::SetEnvironmentVariable("IQFeedLogin", "$login", "User")
-[System.Environment]::SetEnvironmentVariable("IQFeedPassword", "$password", "User")
+# Inject the IQFeed variables into the config
+(Get-Content "C:\Program Files (x86)\DTN\IQFeed\iqfeed-service.xml").replace("%IQFeedProduct%", $product) | Set-Content "C:\Program Files (x86)\DTN\IQFeed\iqfeed-service.xml"
+(Get-Content "C:\Program Files (x86)\DTN\IQFeed\iqfeed-service.xml").replace("%IQFeedProductVersion%", $version) | Set-Content "C:\Program Files (x86)\DTN\IQFeed\iqfeed-service.xml"
+(Get-Content "C:\Program Files (x86)\DTN\IQFeed\iqfeed-service.xml").replace("%IQFeedLogin%", $login) | Set-Content "C:\Program Files (x86)\DTN\IQFeed\iqfeed-service.xml"
+(Get-Content "C:\Program Files (x86)\DTN\IQFeed\iqfeed-service.xml").replace("%IQFeedPassword%", $password) | Set-Content "C:\Program Files (x86)\DTN\IQFeed\iqfeed-service.xml"
+
+# Install the IQFeed service. It should start automatically after reboot
 Start-Process -Wait -FilePath "C:\Program Files (x86)\DTN\IQFeed\iqfeed-service.exe" -ArgumentList "install"
