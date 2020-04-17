@@ -26,10 +26,10 @@ Remove-Item "C:\image\vultr-cli.zip" -Force
 # Find out what the private IP is for this machine
 $ExternalIP = Get-NetIPAddress -InterfaceAlias "Ethernet" -AddressFamily IPv4
 $Match = C:\image\vultr-cli.exe server list | Select-String -Pattern $ExternalIP.IPAddress -SimpleMatch | Select-Object -First 1
-$PrivateIP = ($Match.line -split '\s+')[0]
+$ip = ($Match.line -split '\s+')[0]
 
 # Configure Vultr private networking
-netsh interface ip set address name="Ethernet 2" static $PrivateIP 255.255.0.0 0.0.0.0 1
+netsh interface ip set address name="Ethernet 2" static $ip 255.255.0.0 0.0.0.0 1
 
 # Install IQFeed
 Invoke-WebRequest -Uri "http://www.iqfeed.net/iqfeed_client_$IQFeedVersion.exe" -OutFile "C:\image\iqfeed.exe"
