@@ -20,9 +20,7 @@ $IQFeedVersion = "6_1_0_20"
 [Environment]::SetEnvironmentVariable("VULTR_API_KEY", $apikey, "User")
 $env:VULTR_API_KEY = $apikey
 Invoke-WebRequest -Uri "https://github.com/vultr/vultr-cli/releases/download/v0.3.0/vultr-cli_0.3.0_windows_64-bit.zip" -OutFile "C:\image\vultr-cli.zip"
-Expand-Archive -Path "C:\image\vultr-cli.zip"
-Move-Item -Path "C:\image\vultr-cli\vultr-cli.exe" -Destination "C:\image\vultr-cli.exe"
-Remove-Item "C:\image\vultr-cli" -Force
+Expand-Archive "C:\image\vultr-cli.zip" -DestinationPath "C:\image"
 Remove-Item "C:\image\vultr-cli.zip" -Force
 
 # Find out what the private IP is for this machine
