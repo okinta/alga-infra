@@ -51,4 +51,5 @@ apt install -y zsh
 chsh -s $(which zsh)
 wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
 ZSH="/root/.oh-my-zsh" sh install.sh
+cp ~/.zshrc /root/.zshrc
 rm -f install.sh
