@@ -1,0 +1,8 @@
+<service>
+  <id>iqfeed</id>
+  <name>IQFeed</name>
+  <description>Runs IQFeed client continuously.</description>
+  <executable>powershell</executable>
+  <arguments>"C:\Program Files (x86)\DTN\IQFeed\run-iqfeed.ps1" -product %IQFeedProduct% --version %IQFeedProductVersion% --login %IQFeedLogin% --password %IQFeedPassword%</arguments>
+  <onfailure action="restart" />
+</service>

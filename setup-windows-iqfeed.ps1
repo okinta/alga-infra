@@ -33,13 +33,12 @@ netsh interface portproxy add v4tov4 listenport=9400 listenaddress=$ip connectad
 New-NetFirewallRule -Name iqfeed -DisplayName "IQFeed Port Forwarding" -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalAddress "$ip" -LocalPort 5009,9100,9200,9300,9400
 
 # Create the IQFeed service so it runs continuously
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/okinta/vultr-scripts/master/run-iqfeed.ps1" -OutFile "C:\Program Files (x86)\DTN\IQFeed\run-iqfeed.ps1"
-$params = @{
-  Name = "IQFeed"
-  BinaryPathName = "powershell C:\Program Files (x86)\DTN\IQFeed\run-iqfeed.ps1 --product $product --version $version --login $login --password $password"
-  DependsOn = "NetLogon"
-  DisplayName = "IQFeed"
-  StartupType = "Automatic"
-  Description = "Runs IQFeed client continuously."
-}
-New-Service @params
+Invoke-WebRequest -Uri "https://github.com/winsw/winsw/releases/download/v2.7.0/WinSW.NET461.exe" -OutFile "C:\Program Files (x86)\DTN\IQFeed\iqfeed-service.exe"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/okinta/vultr-scripts/master/iqfeed/iqfeed-service.xml" -OutFile "C:\Program Files (x86)\DTN\IQFeed\iqfeed-service.xml"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/okinta/vultr-scripts/master/iqfeed/run-iqfeed.ps1" -OutFile "C:\Program Files (x86)\DTN\IQFeed\run-iqfeed.ps1"
+
+[System.Environment]::SetEnvironmentVariable("IQFeedProduct", "$product", "User")
+[System.Environment]::SetEnvironmentVariable("IQFeedProductVersion", "$version", "User")
+[System.Environment]::SetEnvironmentVariable("IQFeedLogin", "$login", "User")
+[System.Environment]::SetEnvironmentVariable("IQFeedPassword", "$password", "User")
+Start-Process -Wait -FilePath "C:\Program Files (x86)\DTN\IQFeed\iqfeed-service.exe" -ArgumentList "install"
