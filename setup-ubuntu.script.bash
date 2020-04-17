@@ -49,6 +49,6 @@ netplan apply
 apt update
 apt install -y zsh
 chsh -s $(which zsh)
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-cp -r ~/.oh-my-zsh /root/.oh-my-zsh
-cp ~/.zshrc /root/.zshrc
+wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+ZSH="/root/.oh-my-zsh" sh install.sh
+rm -f install.sh
