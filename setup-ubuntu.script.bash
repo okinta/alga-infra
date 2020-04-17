@@ -21,18 +21,13 @@ rm -f "vultr-cli_${VULTR_CLI_VERSION}_linux_64-bit.tar.gz"
 
 # Now find this machine's private IP
 external_ip=$(ifconfig ens3 | grep "inet " | awk '{print $2}')
-private_ip=""
-for id in $(vultr-cli server list | awk '{print $1}' | egrep '[0-9]+'); do
-    main_ip=$(vultr-cli server info $id | grep "Main IP" | awk '{print $3}')
-    if [ $main_ip = $external_ip ]; then
-        private_ip=$(vultr-cli server info $id | grep "Internal IP" | awk '{print $3}')
-    fi
-done
-
-if [ -z "$private_ip" ]; then
-    echo "Can't find private IP"
+id=$(vultr-cli server list | grep "$external_ip" | awk '{print $1}')
+if [ -z "$id" ]; then
+    echo "Can't find server"
     exit 1
 fi
+
+private_ip=$(vultr-cli server info $id | grep "Internal IP" | awk '{print $3}')
 
 # Configure this machine's private network
 echo "network:
