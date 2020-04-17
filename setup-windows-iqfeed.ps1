@@ -3,7 +3,7 @@
 #
 
 param (
-    [Parameter(Mandatory=$true)][string]$ip,
+    [Parameter(Mandatory=$true)][string]$apikey,
     [Parameter(Mandatory=$true)][string]$product,
     [Parameter(Mandatory=$true)][string]$version,
     [Parameter(Mandatory=$true)][string]$login,
@@ -16,8 +16,22 @@ $IQFeedVersion = "6_1_0_20"
 
 [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
 
+# Set up Vultr-CLI
+[Environment]::SetEnvironmentVariable("VULTR_API_KEY", $apikey, "User")
+$env:VULTR_API_KEY = $apikey
+Invoke-WebRequest -Uri "https://github.com/vultr/vultr-cli/releases/download/v0.3.0/vultr-cli_0.3.0_windows_64-bit.zip" -OutFile "C:\image\vultr-cli.zip"
+Expand-Archive -Path "C:\image\vultr-cli.zip"
+Move-Item -Path "C:\image\vultr-cli\vultr-cli.exe" -Destination "C:\image\vultr-cli.exe"
+Remove-Item "C:\image\vultr-cli" -Force
+Remove-Item "C:\image\vultr-cli.zip" -Force
+
+# Find out what the private IP is for this machine
+$ExternalIP = Get-NetIPAddress -InterfaceAlias "Ethernet" -AddressFamily IPv4
+$Match = C:\image\vultr-cli.exe server list | Select-String -Pattern $ExternalIP.IPAddress -SimpleMatch | Select-Object -First 1
+$PrivateIP = ($Match.line -split '\s+')[0]
+
 # Configure Vultr private networking
-netsh interface ip set address name="Ethernet 2" static $ip 255.255.0.0 0.0.0.0 1
+netsh interface ip set address name="Ethernet 2" static $PrivateIP 255.255.0.0 0.0.0.0 1
 
 # Install IQFeed
 Invoke-WebRequest -Uri "http://www.iqfeed.net/iqfeed_client_$IQFeedVersion.exe" -OutFile "C:\image\iqfeed.exe"

@@ -12,8 +12,7 @@ should be named `setup-windows-iqfeed` within Vultr.
 
 Variables to replace:
 
-* `[VULTR_PRIVATE_IP]`: Replace this with the private IP address witin Vultr's
-dashboard.
+* `[VULTR_API_KEY]`: Replace this with your Vultr API key.
 * `[IQFEED_PRODUCT]`: Replace this with your IQFeed product provided by your
 application or DTN.
 * `[IQFEED_PRODUCT_VERSION]`: Replace this with your IQFeed product version by
