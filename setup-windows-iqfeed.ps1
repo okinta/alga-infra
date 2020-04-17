@@ -26,7 +26,9 @@ Remove-Item "C:\image\vultr-cli.zip" -Force
 # Find out what the private IP is for this machine
 $ExternalIP = Get-NetIPAddress -InterfaceAlias "Ethernet" -AddressFamily IPv4
 $Match = C:\image\vultr-cli.exe server list | Select-String -Pattern $ExternalIP.IPAddress -SimpleMatch | Select-Object -First 1
-$ip = ($Match.line -split '\s+')[0]
+$VultrID = ($Match.line -split '\s+')[0]
+$ip = C:\image\vultr-cli.exe server info $VultrID | Select-String -Pattern "Internal IP" -SimpleMatch | Select-Object -First 1
+$ip = ($ip.line -split '\s+')[2]
 
 # Configure Vultr private networking
 netsh interface ip set address name="Ethernet 2" static $ip 255.255.0.0 0.0.0.0 1
