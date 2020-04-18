@@ -17,6 +17,8 @@ export VULTR_API_KEY=$(cat /root/.bashrc | grep "export VULTR_API_KEY" | awk '{p
 # Who are we?
 id="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"
 tag=$(vultr-cli serer info $id | grep Tag | awk '{print $2}')
+echo $tag
+exit
 
 # Install flatcar if that's what the server is destined for
 if [ $tag = "flatcar" ]; then
