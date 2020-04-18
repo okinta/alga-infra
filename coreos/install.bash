@@ -24,7 +24,13 @@ if [ $tag = "flatcar" ]; then
     chmod +x flatcar-install
     ./flatcar-install -d /dev/vda -C stable
 
-# Otherwise install coreos
+# Or install Fedora CoreOS
+elif [ $tag = "fcos" ]; then
+    apt install -y cargo
+    cargo install coreos-installer
+    coreos-installer install /dev/vda
+
+# Otherwise install Red Hat CoreOS
 else
     wget https://raw.github.com/coreos/init/master/bin/coreos-install
     chmod +x coreos-install

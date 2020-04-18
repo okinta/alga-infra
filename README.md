@@ -59,7 +59,7 @@ After a few minutes a new ISO will be created in Vultr called
 `installcoreos.iso`. Once this ISO appears the build server should be destroyed
 (TODO: automatically destroy after ISO build is complete).
 
-### Creating a CoreOS Server
+### Creating a Red Hat CoreOS Server (deprecated)
 
 To create a barebones CoreOS server, run:
 
@@ -69,4 +69,10 @@ To create a barebones CoreOS server, run:
 
 To create a barebones Flatcar server, run:
 
-    ./core/create-flatcar-server.bash
+    ./coreos/create-flatcar-server.bash
+
+### Creating a Fedora CoreOS Server
+
+To create a barebones Fedora CoreOS server, run:
+
+    ./coreos/create-fcos-server.bash
