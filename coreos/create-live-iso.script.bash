@@ -50,4 +50,4 @@ fi
 
 # Tell Vultr to download the ISO
 external_ip=$(ifconfig ens3 | grep "inet " | awk '{print $2}')
-vultr-cli iso create "http://$external_ip/installcoreos.iso"
+vultr-cli iso create --url "http://$external_ip/installcoreos.iso"
