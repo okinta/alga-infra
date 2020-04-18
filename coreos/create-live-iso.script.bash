@@ -12,7 +12,7 @@ fi
 # Save the Vultr API key inside the ISO so we have access to it later when a
 # server boots
 export VULTR_API_KEY="$1"
-echo >> "export VULTR_API_KEY=$1"
+echo "export VULTR_API_KEY=$1" >> /root/.bashrc
 
 # On boot, run install-coreos.bash
 cat > /etc/rc.local <<EOL
