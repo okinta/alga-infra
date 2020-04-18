@@ -21,7 +21,7 @@ chmod +x /etc/rc.local
 
 # Build the ISO
 VERSION="2.3"
-apt install -y mkisofs nginx unzip
+apt install -y mkisofs unzip
 wget "https://github.com/Tomas-M/linux-live/archive/v$VERSION.zip"
 unzip "v$VERSION.zip"
 mv "linux-live-$VERSION" /tmp
@@ -30,6 +30,7 @@ rm -f "v$VERSION.zip"
 /tmp/gen_linux_iso.sh
 
 # Host the ISO file so Vultr can download it
+apt install -y nginx
 ufw allow "Nginx HTTP"
 mv /tmp/linux-x86_64.iso /var/www/html/installcoreos.iso
 
