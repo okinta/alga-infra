@@ -36,3 +36,37 @@ API key.
 To create a new server, run:
 
     ./create-ubuntu-server.bash
+
+## CoreOS Servers
+
+To spin up servers running CoreOS, a few steps are required.
+
+1. Create an ISO that we can boot into to install the OS.
+2. Boot into a machine with the mounted ISO to install the OS.
+3. Unmount the ISO and reboot into the newly installed OS.
+
+### Creating the ISO
+
+`coreos/create-live-iso.bash` contains the startup script in order to create a
+new ISO. This should be named `create-live-iso` within Vultr. Replace
+`[VULTR_API_KEY]` with your Vultr API key.
+
+To create the ISO, run:
+
+    ./coreos/build-iso.bash
+
+After a few minutes a new ISO will be created in Vultr called
+`installcoreos.iso`. Once this ISO appears the build server should be destroyed
+(TODO: automatically destroy after ISO build is complete).
+
+### Creating a CoreOS Server
+
+To create a barebones CoreOS server, run:
+
+    ./coreos/create-coreos-server.bash
+
+### Creating a Flatcar Server
+
+To create a barebones Flatcar server, run:
+
+    ./core/create-flatcar-server.bash
