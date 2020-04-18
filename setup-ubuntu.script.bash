@@ -47,3 +47,9 @@ chsh -s $(which zsh)
 wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
 HOME="/root" ZSH="/root/.oh-my-zsh" sh install.sh
 rm -f install.sh
+
+# Update to latest software then reboot
+apt upgrade -y
+apt autoremove -y
+apt-get autoclean -y
+reboot now
