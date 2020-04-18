@@ -39,6 +39,7 @@ echo "network:
       dhcp4: no
       addresses: [$private_ip/16]" > /etc/netplan/10-ens7.yaml
 netplan apply
+echo "Finished configuring private network"
 
 # Install zsh and Oh My Zsh
 apt update
@@ -47,9 +48,11 @@ chsh -s $(which zsh)
 wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
 HOME="/root" ZSH="/root/.oh-my-zsh" sh install.sh
 rm -f install.sh
+echo "Finished configuring zsh"
 
 # Update to latest software then reboot
 apt upgrade -y
 apt autoremove -y
 apt-get autoclean -y
+echo "Done. Rebooting."
 reboot now
