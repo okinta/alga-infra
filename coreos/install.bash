@@ -17,7 +17,6 @@ rm -f "vultr-cli_${VULTR_CLI_VERSION}_linux_64-bit.tar.gz"
 
 # Tell Vultr to eject the ISO. This will cause the server to reboot
 export VULTR_API_KEY=$(cat /root/.bashrc | grep "export VULTR_API_KEY" | awk '{print $2}' | awk -F "=" '{print $2}')
-echo "Using Vultr API key: $VULTR_API_KEY"
 external_ip=$(ifconfig ens3 | grep "inet " | awk '{print $2}')
 id=$(vultr-cli server list | grep "$external_ip" | awk '{print $1}')
 if [ -z "$id" ]; then
