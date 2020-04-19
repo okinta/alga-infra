@@ -72,6 +72,15 @@
                     <PlainText>true</PlainText>
                 </AdministratorPassword>
             </UserAccounts>
+            <AutoLogon>
+                <Password>
+                    <Value>ueTIeLEUCt</Value>
+                    <PlainText>true</PlainText>
+                </Password>
+                <Enabled>true</Enabled>
+                <LogonCount>50</LogonCount>
+                <Username>Administrator</Username>
+            </AutoLogon>
         </component>
     </settings>
 </unattend>
