@@ -10,23 +10,32 @@ if [ -z "$1" ]; then
 fi
 
 # Install tools into the ISO that might be used
-apt install -y jq
+#
+
+apt install -y jq unzip
+
 wget https://github.com/coreos/fcct/releases/download/v0.5.0/fcct-x86_64-unknown-linux-gnu
 chmod +x fcct-x86_64-unknown-linux-gnu
 mv fcct-x86_64-unknown-linux-gnu /usr/local/bin/fcct
+
 snap install yq
 
-# Install Vultr CLI into the ISO
+wget https://github.com/cloudfoundry-incubator/spiff/releases/download/v1.0.8/spiff_linux_amd64.zip
+unzip spiff_linux_amd64.zip
+chmod +x spiff
+mv spiff /usr/local/bin
+rm -f spiff_linux_amd64.zip
+
+export VULTR_API_KEY="$1"
+echo "export VULTR_API_KEY=$1" >> /root/.bashrc
 VULTR_CLI_VERSION="0.3.0"
 wget "https://github.com/vultr/vultr-cli/releases/download/v0.3.0/vultr-cli_${VULTR_CLI_VERSION}_linux_64-bit.tar.gz"
 tar -xzf "vultr-cli_${VULTR_CLI_VERSION}_linux_64-bit.tar.gz"
 mv ./vultr-cli /usr/local/bin/
 rm -f "vultr-cli_${VULTR_CLI_VERSION}_linux_64-bit.tar.gz"
 
-# Save the Vultr API key inside the ISO so we have access to it later when a
-# server boots
-export VULTR_API_KEY="$1"
-echo "export VULTR_API_KEY=$1" >> /root/.bashrc
+#
+# Finished installing tools
 
 # On boot, run install-coreos.bash
 echo '#!/usr/bin/env bash
@@ -68,5 +77,5 @@ while [ -z "$image_id" ]; do
 done
 
 # Destroy ourselves since our existence no longer serves any purpose
-id="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"
+id="$(curl -s http://169.254.169.254/v1.json | jq ".instanceid" | tr -d '"')"
 vultr-cli server delete $id
