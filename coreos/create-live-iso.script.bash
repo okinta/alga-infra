@@ -14,6 +14,7 @@ apt install -y jq
 wget https://github.com/coreos/fcct/releases/download/v0.5.0/fcct-x86_64-unknown-linux-gnu
 chmod +x fcct-x86_64-unknown-linux-gnu
 mv fcct-x86_64-unknown-linux-gnu /usr/local/bin/fcct
+snap install yq
 
 # Install Vultr CLI into the ISO
 VULTR_CLI_VERSION="0.3.0"
