@@ -18,7 +18,6 @@ wget "https://github.com/vultr/vultr-cli/releases/download/v0.3.0/vultr-cli_${VU
 tar -xzf "vultr-cli_${VULTR_CLI_VERSION}_linux_64-bit.tar.gz"
 mv ./vultr-cli /usr/local/bin/
 rm -f "vultr-cli_${VULTR_CLI_VERSION}_linux_64-bit.tar.gz"
-export VULTR_API_KEY=$(cat /root/.bashrc | grep "export VULTR_API_KEY" | awk '{print $2}' | awk -F "=" '{print $2}')
 
 # Save the Vultr API key inside the ISO so we have access to it later when a
 # server boots

@@ -4,6 +4,8 @@
 # Installs coreos on a machine
 #
 
+export VULTR_API_KEY=$(cat /root/.bashrc | grep "export VULTR_API_KEY" | awk '{print $2}' | awk -F "=" '{print $2}')
+
 # Who are we?
 id="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"
 tag=$(vultr-cli server info $id | grep Tag | awk '{print $2}')
