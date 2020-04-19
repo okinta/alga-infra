@@ -4,6 +4,8 @@
 # Installs coreos on a machine
 #
 
+COREOS_INSTALLER="https://github.com/okinta/coreos-installer-docker/releases/download/0.1.3/coreos-installer"
+
 export VULTR_API_KEY=$(cat /root/.bashrc | grep "export VULTR_API_KEY" | awk '{print $2}' | awk -F "=" '{print $2}')
 
 # Who are we?
@@ -18,9 +20,18 @@ if [ $tag = "flatcar" ]; then
 
 # Or install Fedora CoreOS
 elif [ $tag = "fcos" ]; then
-    wget https://github.com/okinta/coreos-installer-docker/releases/download/0.1.3/coreos-installer
+    wget $COREOS_INSTALLER
     chmod +x coreos-installer
     ./coreos-installer install /dev/vda
+
+elif [ $tag = "vultrkv" ]; then
+    wget $COREOS_INSTALLER
+    chmod +x coreos-installer
+
+    wget https://raw.githubusercontent.com/okinta/vultrkv/master/coreos.fcc
+    fcct --strict < coreos.fcc > coreos.ign
+
+    ./coreos-installer install /dev/vda -i coreos.ign
 
 # Otherwise install Red Hat CoreOS
 else

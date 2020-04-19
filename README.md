@@ -24,6 +24,15 @@ To create a new server, run:
 
     ./create-iqfeed-server.bash
 
+## Vultrkv Server
+
+This server runs a simple key value store, allowing other servers to save and
+retrieve configuration information.
+
+To create a new server, run:
+
+    ./create-vultrkv-server.bash
+
 ## Ubuntu Server
 
 This server comes with docker pre-installed and is able to communicate with
