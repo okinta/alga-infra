@@ -4,16 +4,6 @@
 # Installs coreos on a machine
 #
 
-apt install -y jq
-
-# Set up Vultr CLI
-VULTR_CLI_VERSION="0.3.0"
-wget "https://github.com/vultr/vultr-cli/releases/download/v0.3.0/vultr-cli_${VULTR_CLI_VERSION}_linux_64-bit.tar.gz"
-tar -xzf "vultr-cli_${VULTR_CLI_VERSION}_linux_64-bit.tar.gz"
-mv ./vultr-cli /usr/local/bin/
-rm -f "vultr-cli_${VULTR_CLI_VERSION}_linux_64-bit.tar.gz"
-export VULTR_API_KEY=$(cat /root/.bashrc | grep "export VULTR_API_KEY" | awk '{print $2}' | awk -F "=" '{print $2}')
-
 # Who are we?
 id="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"
 tag=$(vultr-cli server info $id | grep Tag | awk '{print $2}')
