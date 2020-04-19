@@ -55,9 +55,8 @@ To create the ISO, run:
 
     ./coreos/build-iso.bash
 
-After a few minutes a new ISO will be created in Vultr called
-`installcoreos.iso`. Once this ISO appears the build server should be destroyed
-(TODO: automatically destroy after ISO build is complete).
+After many minutes a new ISO will be created in Vultr called
+`installcoreos.iso`.
 
 ### Creating a Red Hat CoreOS Server (deprecated)
 

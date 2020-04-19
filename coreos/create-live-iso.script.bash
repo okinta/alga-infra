@@ -57,3 +57,15 @@ fi
 external_ip=$(ifconfig ens3 | grep "inet " | awk '{print $2}')
 vultr-cli iso create --url "http://$external_ip/installcoreos.iso"
 echo "Started upload"
+
+# Wait until the image has finished uploading
+sleep 60
+image_id=$(vultr-cli iso private | grep installcoreos | awk '{print $1}')
+while [ -z "$image_id" ]; do
+    image_id=$(vultr-cli iso private | grep installcoreos | awk '{print $1}')
+    sleep 60
+done
+
+# Destroy ourselves since our existence no longer serves any purpose
+id="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"
+vultr-cli server delete $id
