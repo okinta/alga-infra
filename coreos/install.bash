@@ -19,7 +19,7 @@ if [ $tag = "flatcar" ]; then
 # Or install Fedora CoreOS
 elif [ $tag = "fcos" ]; then
     wget https://github.com/okinta/coreos-installer-docker/releases/download/0.1.3/coreos-installer
-    chmod +x coreos-install
+    chmod +x coreos-installer
     ./coreos-installer install /dev/vda
     exit
 
