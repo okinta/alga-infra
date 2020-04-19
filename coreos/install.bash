@@ -19,6 +19,7 @@ elif [ $tag = "fcos" ]; then
     wget https://github.com/okinta/coreos-installer-docker/releases/download/0.1.3/coreos-installer
     chmod +x coreos-install
     ./coreos-installer install /dev/vda
+    exit
 
 # Otherwise install Red Hat CoreOS
 else
