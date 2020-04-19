@@ -26,7 +26,7 @@ echo "export VULTR_API_KEY=$1" >> /root/.bashrc
 
 # On boot, run install-coreos.bash
 echo '#!/usr/bin/env bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/install.bash)" > /tmp/install.log' > /etc/rc.local
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/install.bash)" > /tmp/install.log 2>&1' > /etc/rc.local
 chmod +x /etc/rc.local
 
 # Build the ISO
