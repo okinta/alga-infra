@@ -26,9 +26,8 @@ if [ $tag = "flatcar" ]; then
 
 # Or install Fedora CoreOS
 elif [ $tag = "fcos" ]; then
-    docker create -ti --name coreos-installer-dummy okinta/coreos-installer sh
-    docker cp coreos-installer-dummy:/coreos-installer .
-    docker rm -f coreos-installer-dummy
+    wget https://github.com/okinta/coreos-installer-docker/releases/download/0.1.3/coreos-installer
+    chmod +x coreos-install
     ./coreos-installer install /dev/vda
 
 # Otherwise install Red Hat CoreOS
