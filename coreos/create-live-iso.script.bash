@@ -20,10 +20,10 @@ mv fcct-x86_64-unknown-linux-gnu /usr/local/bin/fcct
 
 snap install yq
 
-wget https://github.com/cloudfoundry-incubator/spiff/releases/download/v1.0.8/spiff_linux_amd64.zip
+wget https://github.com/mandelsoft/spiff/releases/download/v1.4.0/spiff_linux_amd64.zip
 unzip spiff_linux_amd64.zip
-chmod +x spiff
-mv spiff /usr/local/bin
+chmod +x spiff++
+mv spiff++ /usr/local/bin/spiff
 rm -f spiff_linux_amd64.zip
 
 export VULTR_API_KEY="$1"
