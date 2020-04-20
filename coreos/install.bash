@@ -6,22 +6,27 @@ set -e
 # Installs FCOS on a machine
 #
 
-export VULTR_API_KEY=$(cat /root/.bashrc | grep "export VULTR_API_KEY" | awk '{print $2}' | awk -F "=" '{print $2}')
+VULTR_API_KEY=$(grep "export VULTR_API_KEY" < /root/.bashrc | awk '{print $2}' | awk -F "=" '{print $2}')
+export VULTR_API_KEY
 
-export SSH_KEY="$(cat /root/.ssh/authorized_keys)"
+SSH_KEY="$(cat /root/.ssh/authorized_keys)"
+export SSH_KEY
 echo "export SSH_KEY=\"$SSH_KEY\"" >> /root/.bashrc
 
-export PRIVATE_IP="$(curl -s http://169.254.169.254/v1.json | jq '.interfaces[1].ipv4.address' | tr -d '"')"
+PRIVATE_IP="$(curl -s http://169.254.169.254/v1.json | jq '.interfaces[1].ipv4.address' | tr -d '"')"
+export PRIVATE_IP
 echo "export PRIVATE_IP=\"$PRIVATE_IP\"" >> /root/.bashrc
 
 # Who are we?
-export ID="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"
+ID="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"
+export ID
 echo "export ID=\"$ID\"" >> /root/.bashrc
-export TAG=$(vultr-cli server info $ID | grep Tag | awk '{print $2}')
+TAG=$(vultr-cli server info "$ID" | grep Tag | awk '{print $2}')
+export TAG
 echo "export TAG=\"$TAG\"" >> /root/.bashrc
 echo "Tag: $TAG"
 
-if [ $TAG = "vultrkv" ]; then
+if [ "$TAG" = "vultrkv" ]; then
     echo "Installing vultrkv server"
 
     wget -q https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc -O coreos.fcc.template
@@ -32,7 +37,7 @@ if [ $TAG = "vultrkv" ]; then
 
     coreos-installer install /dev/vda -i coreos.ign
 
-elif [ $TAG = "fcos" ]; then
+elif [ "$TAG" = "fcos" ]; then
     echo "Installing default fcos server with root access"
 
     wget -q https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc -O coreos.fcc.template
@@ -53,4 +58,4 @@ fi
 
 # Tell Vultr to eject the ISO. This will cause the server to reboot
 echo "Rebooting"
-vultr-cli server iso detach $ID
+vultr-cli server iso detach "$ID"
