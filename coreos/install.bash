@@ -41,12 +41,10 @@ elif [ "$TAG" = "fcos" ]; then
     echo "Installing default fcos server with root access"
 
     wget -q https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc -O coreos.fcc.template
+    wget -q https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/root.fcc -O root.fcc.template
+
     envsubst < coreos.fcc.template > coreos.fcc
-    echo "passwd:
-  users:
-    - name: regan
-      groups:
-        - sudo" > root.fcc
+    envsubst < root.fcc.template > root.fcc
     yq merge coreos.fcc root.fcc | fcct > coreos.ign
 
     coreos-installer install /dev/vda -i coreos.ign
