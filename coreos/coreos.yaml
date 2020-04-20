@@ -1,3 +1,19 @@
+storage:
+  files:
+    - path: /etc/systemd/network/static.network
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          [Match]
+          Name=eth1
+
+          [Link]
+          MTUBytes=1450
+
+          [Network]
+          Address=$PRIVATE_IP/16
+
 passwd:
   users:
     - name: regan
