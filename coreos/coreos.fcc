@@ -4,4 +4,4 @@ passwd:
   users:
     - name: regan
       ssh_authorized_keys:
-        - (( env("PERSONAL_SSH_KEY") ))
+        - (( env("SSH_KEY") ))

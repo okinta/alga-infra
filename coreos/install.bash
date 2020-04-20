@@ -9,8 +9,8 @@ chmod +x coreos-installer
 
 export VULTR_API_KEY=$(cat /root/.bashrc | grep "export VULTR_API_KEY" | awk '{print $2}' | awk -F "=" '{print $2}')
 
-export PERSONAL_SSH_KEY="$(curl -s http://169.254.169.254/v1.json | jq ".public-keys" | tr -d '"')"
-echo "export PERSONAL_SSH_KEY=\"$PERSONAL_SSH_KEY\"" >> /root/.bashrc
+export SSH_KEY="$(cat /root/.ssh/authorized_keys)"
+echo "export SSH_KEY=\"$SSH_KEY\"" >> /root/.bashrc
 
 # Who are we?
 id="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"

@@ -25,7 +25,6 @@ elif [ $_arg_name = "iqfeed" ]; then
     tag="iqfeed"
 
 elif [ $_arg_name = "test" ]; then
-    include_ssh_key=true
     iso="installcoreos.iso"
     tag="test"
 
