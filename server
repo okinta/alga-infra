@@ -30,6 +30,7 @@ elif [ $_arg_name = "test" ]; then
 elif [ $_arg_name = "ubuntu" ]; then
     # Using docker app because it's simply ubuntu with docker pre-installed
     app="Docker on Ubuntu 18.04 x64"
+    include_ssh_key=true
     script="setup-ubuntu"
 
 elif [ $_arg_name = "vultrkv" ]; then
