@@ -75,7 +75,7 @@ fi
 
 if ! [ -z "$script" ]; then
     script_id=$(vultr-cli script list | grep "$script" | awk '{print $1}')
-    command="$command --script $script_id"
+    command="$command --script-id $script_id"
 fi
 
 if ! [ -z "$tag" ]; then
