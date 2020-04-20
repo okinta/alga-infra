@@ -19,6 +19,10 @@ if [ $_arg_name = "buildiso" ]; then
     region="New Jersey"
     script="create-live-iso"
 
+elif [ $_arg_name = "fcos" ]; then
+    iso="installcoreos.iso"
+    tag="fcos"
+
 elif [ $_arg_name = "iqfeed" ]; then
     iso="server2019.iso"
     tag="iqfeed"
@@ -43,6 +47,7 @@ elif [ $_arg_name = "windows" ]; then
 else
     die "Unknown server type $_arg_name. Available server types are:
 buildiso
+fcos
 iqfeed
 test
 ubuntu

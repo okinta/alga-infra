@@ -18,12 +18,26 @@ echo "export PRIVATE_IP=\"$PRIVATE_IP\"" >> /root/.bashrc
 id="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"
 tag=$(vultr-cli server info $id | grep Tag | awk '{print $2}')
 
+# Install vultrkv server
 if [ $tag = "vultrkv" ]; then
     wget -q https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc -O coreos.fcc.template
     wget -q https://raw.githubusercontent.com/okinta/vultrkv/master/coreos.fcc -O vultrkv.fcc
 
     envsubst < coreos.fcc.template > coreos.fcc
     yq merge coreos.fcc vultrkv.fcc | fcct > coreos.ign
+
+    coreos-installer install /dev/vda -i coreos.ign
+
+# Install a default FCOS server that we have root access to
+elif [ $tag = "fcos" ]; then
+    wget -q https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc -O coreos.fcc.template
+    envsubst < coreos.fcc.template > coreos.fcc
+    echo "passwd:
+  users:
+    - name: regan
+      groups:
+        - sudo" > root.fcc
+    yq merge coreos.fcc root.fcc | fcct > coreos.ign
 
     coreos-installer install /dev/vda -i coreos.ign
 
