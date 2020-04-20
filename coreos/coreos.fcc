@@ -18,6 +18,18 @@ storage:
           address1=$PRIVATE_IP/24
           method=manual
 
+    - path: /etc/sysconfig/iptables
+      mode: 0600
+      contents:
+        inline: |
+          *filter
+          :INPUT DROP [0:0]
+          :FORWARD DROP [0:0]
+          :OUTPUT ACCEPT [0:0]
+          -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+          -A INPUT -i eth1 -p tcp -j ACCEPT
+          COMMIT
+
 passwd:
   users:
     - name: regan
