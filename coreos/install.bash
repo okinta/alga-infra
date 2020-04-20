@@ -22,7 +22,7 @@ if [ $tag = "vultrkv" ]; then
     envsubst < coreos.fcc > coreos.fcc
     yq merge coreos.fcc vultrkv.fcc | fcct > coreos.ign
 
-    ./coreos-installer install /dev/vda -i coreos.ign
+    coreos-installer install /dev/vda -i coreos.ign
 
 # If no valid tag is provided, treat this as a test server
 else
