@@ -2,7 +2,19 @@
 
 Scripts for configuring Vultr servers.
 
-## IQFeed Server
+## Development
+
+To validate the script, use shellcheck:
+
+    shellcheck server
+
+## Servers
+
+This repository allows the creation of different types of servers within Vultr.
+
+See `./server --help` for more usage information.
+
+### IQFeed Server
 
 This server runs IQFeed client, allowing other servers within the same private
 network to pull data.
@@ -24,7 +36,7 @@ To create a new server, run:
 
     ./server iqfeed
 
-## Vultrkv Server
+### Vultrkv Server
 
 This server runs a simple key value store, allowing other servers to save and
 retrieve configuration information.
@@ -33,7 +45,7 @@ To create a new server, run:
 
     ./server vultrkv
 
-## Ubuntu Server
+### Ubuntu Server
 
 This server comes with docker pre-installed and is able to communicate with
 other servers within the same private network.
@@ -46,7 +58,7 @@ To create a new server, run:
 
     ./server ubuntu
 
-## Fedora CoreOS Servers
+### Fedora CoreOS Servers
 
 To spin up servers running Fedora CoreOS (FCOS), a few steps are required.
 
@@ -54,7 +66,7 @@ To spin up servers running Fedora CoreOS (FCOS), a few steps are required.
 2. Boot into a machine with the mounted ISO to install the OS.
 3. Unmount the ISO and reboot into the newly installed OS.
 
-### Creating the ISO
+#### Creating the ISO
 
 `coreos/create-live-iso.bash` contains the startup script in order to create a
 new ISO. This should be named `create-live-iso` within Vultr. Replace
@@ -67,7 +79,7 @@ To create the ISO, run:
 After many minutes a new ISO will be created in Vultr called
 `installcoreos.iso`.
 
-### Creating a Test FCOS Server
+#### Creating a Test FCOS Server
 
 A test FCOS server can be spun up by running:
 

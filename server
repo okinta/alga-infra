@@ -11,7 +11,6 @@ os=""
 plan="1024 MB RAM,25 GB SSD,1.00 TB BW"
 region="Chicago"
 script=""
-ssh_key=""
 tag=""
 
 if [ $_arg_name = "buildiso" ]; then
@@ -33,6 +32,10 @@ elif [ $_arg_name = "ubuntu" ]; then
     app="Docker on Ubuntu 18.04 x64"
     script="setup-ubuntu"
 
+elif [ $_arg_name = "vultrkv" ]; then
+    iso="installcoreos.iso"
+    tag="vultrkv"
+
 elif [ $_arg_name = "windows" ]; then
     iso="server2019.iso"
 
@@ -42,6 +45,7 @@ buildiso
 iqfeed
 test
 ubuntu
+vultrkv
 windows"
 fi
 
@@ -79,4 +83,4 @@ if ! [ -z "$tag" ]; then
 fi
 
 echo "+ $command"
-eval $command
+eval "$command"
