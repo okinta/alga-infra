@@ -28,8 +28,11 @@ elif [ $tag = "vultrkv" ]; then
     wget $COREOS_INSTALLER
     chmod +x coreos-installer
 
+    export PERSONAL_SSH_KEY="$(curl -s http://169.254.169.254/v1.json | jq ".public-keys" | tr -d '"')"
+
+    wget https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc
     wget https://raw.githubusercontent.com/okinta/vultrkv/master/coreos.fcc
-    fcct --strict < coreos.fcc > coreos.ign
+    spiff merge coreos.fcc vultrkv.fcc | fcct > coreos.ign
 
     ./coreos-installer install /dev/vda -i coreos.ign
 
