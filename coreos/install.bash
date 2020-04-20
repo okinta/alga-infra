@@ -15,11 +15,13 @@ export PRIVATE_IP="$(curl -s http://169.254.169.254/v1.json | jq '.interfaces[1]
 echo "export PRIVATE_IP=\"$PRIVATE_IP\"" >> /root/.bashrc
 
 # Who are we?
-id="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"
-tag=$(vultr-cli server info $id | grep Tag | awk '{print $2}')
-echo "Tag: $tag"
+export ID="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"
+echo "export ID=\"$ID\"" >> /root/.bashrc
+export TAG=$(vultr-cli server info $ID | grep Tag | awk '{print $2}')
+echo "export TAG=\"$TAG\"" >> /root/.bashrc
+echo "Tag: $TAG"
 
-if [ $tag = "vultrkv" ]; then
+if [ $TAG = "vultrkv" ]; then
     echo "Installing vultrkv server"
 
     wget -q https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc -O coreos.fcc.template
@@ -30,7 +32,7 @@ if [ $tag = "vultrkv" ]; then
 
     coreos-installer install /dev/vda -i coreos.ign
 
-elif [ $tag = "fcos" ]; then
+elif [ $TAG = "fcos" ]; then
     echo "Installing default fcos server with root access"
 
     wget -q https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc -O coreos.fcc.template
@@ -51,4 +53,4 @@ fi
 
 # Tell Vultr to eject the ISO. This will cause the server to reboot
 echo "Rebooting"
-vultr-cli server iso detach $id
+vultr-cli server iso detach $ID
