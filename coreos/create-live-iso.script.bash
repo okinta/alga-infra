@@ -16,6 +16,11 @@ fi
 
 apt install -y jq unzip
 
+# coreos-installer
+wget -q https://github.com/okinta/coreos-installer-docker/releases/download/0.1.3/coreos-installer
+chmod +x coreos-installer
+mv coreos-installer /usr/local/bin
+
 # envsubst
 curl -sL https://github.com/a8m/envsubst/releases/download/v1.1.0/envsubst-`uname -s`-`uname -m` -o envsubst
 chmod +x envsubst

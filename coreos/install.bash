@@ -6,9 +6,6 @@ set -e
 # Installs FCOS on a machine
 #
 
-wget -q "https://github.com/okinta/coreos-installer-docker/releases/download/0.1.3/coreos-installer"
-chmod +x coreos-installer
-
 export VULTR_API_KEY=$(cat /root/.bashrc | grep "export VULTR_API_KEY" | awk '{print $2}' | awk -F "=" '{print $2}')
 
 export SSH_KEY="$(cat /root/.ssh/authorized_keys)"
