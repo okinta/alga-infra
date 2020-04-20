@@ -16,6 +16,11 @@ fi
 
 apt install -y jq unzip
 
+# envsubst
+curl -sL https://github.com/a8m/envsubst/releases/download/v1.1.0/envsubst-`uname -s`-`uname -m` -o envsubst
+chmod +x envsubst
+mv envsubst /usr/local/bin
+
 # fcct
 wget -q https://github.com/coreos/fcct/releases/download/v0.5.0/fcct-x86_64-unknown-linux-gnu
 chmod +x fcct-x86_64-unknown-linux-gnu

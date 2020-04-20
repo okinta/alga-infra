@@ -21,7 +21,9 @@ tag=$(vultr-cli server info $id | grep Tag | awk '{print $2}')
 if [ $tag = "vultrkv" ]; then
     wget -q https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc
     wget -q https://raw.githubusercontent.com/okinta/vultrkv/master/coreos.fcc -O vultrkv.fcc
-    spiff merge coreos.fcc vultrkv.fcc | fcct > coreos.ign
+
+    envsubst < coreos.fcc > coreos.fcc
+    yq merge coreos.fcc vultrkv.fcc | fcct > coreos.ign
 
     ./coreos-installer install /dev/vda -i coreos.ign
 
