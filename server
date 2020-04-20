@@ -84,3 +84,12 @@ fi
 
 echo "+ $command"
 eval "$command"
+
+# Output the IP
+sleep 1
+ip=$(vultr-cli server info 35959827 | grep "Main IP" | awk '{print $3}')
+while [ -z "$ip" ] || [ "$ip" = "0.0.0.0" ]; do
+    sleep 1
+    ip=$(vultr-cli server info 35959827 | grep "Main IP" | awk '{print $3}')
+done
+echo "$ip"
