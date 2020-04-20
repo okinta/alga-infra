@@ -9,7 +9,7 @@ storage:
           [connection]
           id=private-net
           type=ethernet
-          interface-name=ens7
+          interface-name=eth1
 
           [ethernet]
           mtu=1450
