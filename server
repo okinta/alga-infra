@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+set -e
+
+. ./args.sh
+
+app=""
+iso=""
+plan="1024 MB RAM,25 GB SSD,1.00 TB BW"
+region="Chicago"
+script=""
+
+if [ $_arg_name = "ubuntu" ]; then
+    # Using docker app because it's simply ubuntu with docker pre-installed
+    app="Docker on Ubuntu 18.04 x64"
+    script="setup-ubuntu"
+
+elif [ $_arg_name = "windows" ]; then
+    ISO="server2019.iso"
+
+else
+    echo "Unknown server type $_arg_name. Available server types are:"
+    echo "ubuntu"
+    echo "windows"
+    exit 1
+fi
+
+plan_id=$(vultr-cli plans list | grep "$plan" | awk '{print $1}')
+region_id=$(vultr-cli regions list | grep "$region" | awk '{print $1}')
+command="vultr-cli server create --region $region_id --plan $plan_id --private-network true"
+
+if ! [ -z "$app" ]; then
+    app_id=$(vultr-cli apps | grep "$app" | awk '{print $1}')
+    command="$command --app $app_id"
+fi
+
+if ! [ -z "$iso" ]; then
+    iso_id=$(vultr-cli iso private | grep "$iso" | awk '{print $1}')
+    command="$command --iso $iso_id"
+fi
+
+if ! [ -z "$script" ]; then
+    script_id=$(vultr-cli script list | grep "$script" | awk '{print $1}')
+    command="$command --script $script_id"
+fi
+
+echo "+ $command"
+eval $command
