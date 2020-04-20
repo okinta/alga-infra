@@ -11,6 +11,9 @@ export VULTR_API_KEY=$(cat /root/.bashrc | grep "export VULTR_API_KEY" | awk '{p
 export SSH_KEY="$(cat /root/.ssh/authorized_keys)"
 echo "export SSH_KEY=\"$SSH_KEY\"" >> /root/.bashrc
 
+export PRIVATE_IP="$(curl -s http://169.254.169.254/v1.json | jq '.interfaces[1].ipv4.address' | tr -d '"')"
+echo "export PRIVATE_IP=\"$PRIVATE_IP\"" >> /root/.bashrc
+
 # Who are we?
 id="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"
 tag=$(vultr-cli server info $id | grep Tag | awk '{print $2}')

@@ -1,5 +1,23 @@
 variant: fcos
 version: 1.0.0
+storage:
+  files:
+    - path: /etc/NetworkManager/system-connections/private-net.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=private-net
+          type=ethernet
+          interface-name=ens7
+
+          [ethernet]
+          mtu=1450
+
+          [ipv4]
+          address1=$PRIVATE_IP/24
+          method=manual
+
 passwd:
   users:
     - name: regan
