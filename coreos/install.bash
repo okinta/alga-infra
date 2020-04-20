@@ -29,19 +29,13 @@ echo "Tag: $TAG"
 if [ "$TAG" = "vultrkv" ]; then
     echo "Installing vultrkv server"
 
-    wget -q https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.yaml -O coreos.yaml.template
-    wget -q https://raw.githubusercontent.com/okinta/vultrkv/master/coreos.yaml -O vultrkv.yaml
+    wget -q https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc -O coreos.fcc.template
+    wget -q https://raw.githubusercontent.com/okinta/vultrkv/master/coreos.fcc -O vultrkv.fcc
 
-    wget -q https://github.com/coreos/container-linux-config-transpiler/releases/download/v0.9.0/ct-v0.9.0-x86_64-unknown-linux-gnu
-    chmod +x ct-v0.9.0-x86_64-unknown-linux-gnu
-    mv ct-v0.9.0-x86_64-unknown-linux-gnu /usr/local/bin/ct
+    envsubst < coreos.fcc.template > coreos.fcc
+    yq merge coreos.fcc vultrkv.fcc | fcct > coreos.ign
 
-    envsubst < coreos.yaml.template > coreos.yaml
-    yq merge coreos.yaml vultrkv.yaml | ct > ignition.json
-
-    wget -q https://raw.github.com/coreos/init/master/bin/coreos-install
-    chmod +x coreos-install
-    ./coreos-install -d /dev/vda -i ignition.json -C stable
+    coreos-installer install /dev/vda -i coreos.ign
 
 elif [ "$TAG" = "fcos" ]; then
     echo "Installing default fcos server with root access"
