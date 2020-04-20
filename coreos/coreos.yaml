@@ -1,0 +1,5 @@
+passwd:
+  users:
+    - name: regan
+      ssh_authorized_keys:
+        - "$SSH_KEY"
