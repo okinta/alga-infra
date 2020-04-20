@@ -4,43 +4,28 @@
 # Installs coreos on a machine
 #
 
-COREOS_INSTALLER="https://github.com/okinta/coreos-installer-docker/releases/download/0.1.3/coreos-installer"
+wget "https://github.com/okinta/coreos-installer-docker/releases/download/0.1.3/coreos-installer"
+chmod +x coreos-installer
 
 export VULTR_API_KEY=$(cat /root/.bashrc | grep "export VULTR_API_KEY" | awk '{print $2}' | awk -F "=" '{print $2}')
+
+export PERSONAL_SSH_KEY="$(curl -s http://169.254.169.254/v1.json | jq ".public-keys" | tr -d '"')"
+echo "export PERSONAL_SSH_KEY=\"$PERSONAL_SSH_KEY\"" >> /root/.bashrc
 
 # Who are we?
 id="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"
 tag=$(vultr-cli server info $id | grep Tag | awk '{print $2}')
 
-# Install flatcar if that's what the server is destined for
-if [ $tag = "flatcar" ]; then
-    wget https://raw.githubusercontent.com/flatcar-linux/init/flatcar-master/bin/flatcar-install
-    chmod +x flatcar-install
-    ./flatcar-install -d /dev/vda -C stable
-
-# Or install Fedora CoreOS
-elif [ $tag = "fcos" ]; then
-    wget $COREOS_INSTALLER
-    chmod +x coreos-installer
-    ./coreos-installer install /dev/vda
-
-elif [ $tag = "vultrkv" ]; then
-    wget $COREOS_INSTALLER
-    chmod +x coreos-installer
-
-    export PERSONAL_SSH_KEY="$(curl -s http://169.254.169.254/v1.json | jq ".public-keys" | tr -d '"')"
-
+if [ $tag = "vultrkv" ]; then
     wget https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc
     wget https://raw.githubusercontent.com/okinta/vultrkv/master/coreos.fcc
     spiff merge coreos.fcc vultrkv.fcc | fcct > coreos.ign
 
     ./coreos-installer install /dev/vda -i coreos.ign
 
-# Otherwise install Red Hat CoreOS
+# If no valid tag is provided, treat this as a test server
 else
-    wget https://raw.github.com/coreos/init/master/bin/coreos-install
-    chmod +x coreos-install
-    ./coreos-install -d /dev/vda -C stable
+    exit
 fi
 
 # Tell Vultr to eject the ISO. This will cause the server to reboot

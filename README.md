@@ -22,7 +22,7 @@ provided by your application or DTN.
 
 To create a new server, run:
 
-    ./create-iqfeed-server.bash
+    ./server iqfeed
 
 ## Vultrkv Server
 
@@ -31,7 +31,7 @@ retrieve configuration information.
 
 To create a new server, run:
 
-    ./create-vultrkv-server.bash
+    ./server vultrkv
 
 ## Ubuntu Server
 
@@ -44,11 +44,11 @@ API key.
 
 To create a new server, run:
 
-    ./create-ubuntu-server.bash
+    ./server ubuntu
 
-## CoreOS Servers
+## Fedora CoreOS Servers
 
-To spin up servers running CoreOS, a few steps are required.
+To spin up servers running Fedora CoreOS (FCOS), a few steps are required.
 
 1. Create an ISO that we can boot into to install the OS.
 2. Boot into a machine with the mounted ISO to install the OS.
@@ -62,25 +62,21 @@ new ISO. This should be named `create-live-iso` within Vultr. Replace
 
 To create the ISO, run:
 
-    ./coreos/build-iso.bash
+    ./server buildiso
 
 After many minutes a new ISO will be created in Vultr called
 `installcoreos.iso`.
 
-### Creating a Red Hat CoreOS Server (deprecated)
+### Creating a Test FCOS Server
 
-To create a barebones CoreOS server, run:
+A test FCOS server can be spun up by running:
 
-    ./coreos/create-coreos-server.bash
+    ./server test
 
-### Creating a Flatcar Server
+After the machine is created, you'll be able to SSH into the machine. To
+install CoreOS, run:
 
-To create a barebones Flatcar server, run:
+    ./coreos-installer install /dev/vda [-i ignition-file.ign]
+    reboot
 
-    ./coreos/create-flatcar-server.bash
-
-### Creating a Fedora CoreOS Server
-
-To create a barebones Fedora CoreOS server, run:
-
-    ./coreos/create-fcos-server.bash
+After rebooting, the new FCOS server will be running.

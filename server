@@ -5,24 +5,45 @@ set -e
 . ./args.sh
 
 app=""
+include_ssh_key=false
 iso=""
+os=""
 plan="1024 MB RAM,25 GB SSD,1.00 TB BW"
 region="Chicago"
 script=""
+ssh_key=""
+tag=""
 
-if [ $_arg_name = "ubuntu" ]; then
+if [ $_arg_name = "buildiso" ]; then
+    include_ssh_key=true
+    os="Ubuntu 18.04 x64"
+    region="New Jersey"
+    script="create-live-iso"
+
+elif [ $_arg_name = "iqfeed" ]; then
+    iso="server2019.iso"
+    tag="iqfeed"
+
+elif [ $_arg_name = "test" ]; then
+    include_ssh_key=true
+    iso="installcoreos.iso"
+    tag="test"
+
+elif [ $_arg_name = "ubuntu" ]; then
     # Using docker app because it's simply ubuntu with docker pre-installed
     app="Docker on Ubuntu 18.04 x64"
     script="setup-ubuntu"
 
 elif [ $_arg_name = "windows" ]; then
-    ISO="server2019.iso"
+    iso="server2019.iso"
 
 else
-    echo "Unknown server type $_arg_name. Available server types are:"
-    echo "ubuntu"
-    echo "windows"
-    exit 1
+    die "Unknown server type $_arg_name. Available server types are:
+buildiso
+iqfeed
+test
+ubuntu
+windows"
 fi
 
 plan_id=$(vultr-cli plans list | grep "$plan" | awk '{print $1}')
@@ -34,14 +55,28 @@ if ! [ -z "$app" ]; then
     command="$command --app $app_id"
 fi
 
+if [ "$include_ssh_key" = true ] ; then
+    ssh_key_id=$(vultr-cli ssh list | grep personal | awk '{print $1}')
+    command="$command --ssh-keys $ssh_key_id"
+fi
+
 if ! [ -z "$iso" ]; then
     iso_id=$(vultr-cli iso private | grep "$iso" | awk '{print $1}')
     command="$command --iso $iso_id"
 fi
 
+if ! [ -z "$os" ]; then
+    os_id=$(vultr-cli os | grep "$os" | awk '{print $1}')
+    command="$command --os $os_id"
+fi
+
 if ! [ -z "$script" ]; then
     script_id=$(vultr-cli script list | grep "$script" | awk '{print $1}')
     command="$command --script $script_id"
+fi
+
+if ! [ -z "$tag" ]; then
+    command="$command --tag $tag"
 fi
 
 echo "+ $command"
