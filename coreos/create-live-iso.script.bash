@@ -5,7 +5,7 @@
 #
 
 if [ -z "$1" ]; then
-    echo "Vultr API key must be provided"
+    echo "Vultr API key must be provided" >&2
     exit 1
 fi
 
@@ -14,18 +14,19 @@ fi
 
 apt install -y jq unzip
 
+# fcct
 wget https://github.com/coreos/fcct/releases/download/v0.5.0/fcct-x86_64-unknown-linux-gnu
 chmod +x fcct-x86_64-unknown-linux-gnu
 mv fcct-x86_64-unknown-linux-gnu /usr/local/bin/fcct
 
-snap install yq
-
+# spiff
 wget https://github.com/mandelsoft/spiff/releases/download/v1.4.0/spiff_linux_amd64.zip
 unzip spiff_linux_amd64.zip
 chmod +x spiff++
 mv spiff++ /usr/local/bin/spiff
 rm -f spiff_linux_amd64.zip
 
+# vultr-cli
 export VULTR_API_KEY="$1"
 echo "export VULTR_API_KEY=$1" >> /root/.bashrc
 VULTR_CLI_VERSION="0.3.0"
@@ -76,6 +77,6 @@ while [ -z "$image_id" ]; do
     sleep 60
 done
 
-# Destroy ourselves since our existence no longer serves any purpose
+# Destroy self since our existence no longer serves any purpose
 id="$(curl -s http://169.254.169.254/v1.json | jq ".instanceid" | tr -d '"')"
 vultr-cli server delete $id

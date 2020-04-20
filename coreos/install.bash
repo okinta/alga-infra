@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-# Installs coreos on a machine
+# Installs FCOS on a machine
 #
 
 wget "https://github.com/okinta/coreos-installer-docker/releases/download/0.1.3/coreos-installer"
