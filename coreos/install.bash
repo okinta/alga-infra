@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
+set -e
+
 #
 # Installs FCOS on a machine
 #
 
-wget "https://github.com/okinta/coreos-installer-docker/releases/download/0.1.3/coreos-installer"
+wget -q "https://github.com/okinta/coreos-installer-docker/releases/download/0.1.3/coreos-installer"
 chmod +x coreos-installer
 
 export VULTR_API_KEY=$(cat /root/.bashrc | grep "export VULTR_API_KEY" | awk '{print $2}' | awk -F "=" '{print $2}')
@@ -17,8 +19,8 @@ id="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"
 tag=$(vultr-cli server info $id | grep Tag | awk '{print $2}')
 
 if [ $tag = "vultrkv" ]; then
-    wget https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc
-    wget https://raw.githubusercontent.com/okinta/vultrkv/master/coreos.fcc
+    wget -q https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc
+    wget -q https://raw.githubusercontent.com/okinta/vultrkv/master/coreos.fcc -O vultrkv.fcc
     spiff merge coreos.fcc vultrkv.fcc | fcct > coreos.ign
 
     ./coreos-installer install /dev/vda -i coreos.ign

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 #
 # Creates an ISO that will automatically call coreos/install.bash upon booting
 #
@@ -15,22 +17,20 @@ fi
 apt install -y jq unzip
 
 # fcct
-wget https://github.com/coreos/fcct/releases/download/v0.5.0/fcct-x86_64-unknown-linux-gnu
+wget -q https://github.com/coreos/fcct/releases/download/v0.5.0/fcct-x86_64-unknown-linux-gnu
 chmod +x fcct-x86_64-unknown-linux-gnu
 mv fcct-x86_64-unknown-linux-gnu /usr/local/bin/fcct
 
-# spiff
-wget https://github.com/mandelsoft/spiff/releases/download/v1.4.0/spiff_linux_amd64.zip
-unzip spiff_linux_amd64.zip
-chmod +x spiff++
-mv spiff++ /usr/local/bin/spiff
-rm -f spiff_linux_amd64.zip
+# yq
+wget -q https://github.com/mikefarah/yq/releases/download/3.3.0/yq_linux_amd64
+chmod +x yq_linux_amd64
+mv yq_linux_amd64 /usr/local/bin/yq
 
 # vultr-cli
 export VULTR_API_KEY="$1"
 echo "export VULTR_API_KEY=$1" >> /root/.bashrc
 VULTR_CLI_VERSION="0.3.0"
-wget "https://github.com/vultr/vultr-cli/releases/download/v0.3.0/vultr-cli_${VULTR_CLI_VERSION}_linux_64-bit.tar.gz"
+wget -q "https://github.com/vultr/vultr-cli/releases/download/v0.3.0/vultr-cli_${VULTR_CLI_VERSION}_linux_64-bit.tar.gz"
 tar -xzf "vultr-cli_${VULTR_CLI_VERSION}_linux_64-bit.tar.gz"
 mv ./vultr-cli /usr/local/bin/
 rm -f "vultr-cli_${VULTR_CLI_VERSION}_linux_64-bit.tar.gz"
