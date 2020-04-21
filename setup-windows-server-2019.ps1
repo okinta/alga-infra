@@ -24,6 +24,7 @@ if ([string]::IsNullOrEmpty($ip)) {
     exit
 }
 
+Write-Log "Configuring private network for $ip"
 netsh interface ip set address name="Ethernet 2" static $ip 255.255.0.0 0.0.0.0 1
 Write-Log "Configured private network"
 
