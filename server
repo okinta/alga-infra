@@ -32,7 +32,7 @@ elif [ $_arg_name = "fcos" ]; then
 
 elif [ $_arg_name = "iqfeed" ]; then
     iso="server2019.iso"
-    plan="4096 MB RAM,128 GB SSD,3.00 TB BW"
+    plan="4096 MB RAM,80 GB SSD,3.00 TB BW"
     tag="iqfeed"
 
 elif [ $_arg_name = "test" ]; then
