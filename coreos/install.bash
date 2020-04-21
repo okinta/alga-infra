@@ -49,25 +49,6 @@ elif [ "$TAG" = "fcos" ]; then
 
     coreos-installer install /dev/vda -i coreos.ign
 
-elif [ "$TAG" = "coreos" ]; then
-    echo "Installing default coreos server with root access"
-
-    wget -q https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.yaml -O coreos.yaml.template
-    wget -q https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/root.yaml -O root.yaml.template
-
-    envsubst < coreos.yaml.template > coreos.yaml
-    envsubst < root.yaml.template > root.yaml
-
-    wget -q https://github.com/coreos/container-linux-config-transpiler/releases/download/v0.9.0/ct-v0.9.0-x86_64-unknown-linux-gnu
-    chmod +x ct-v0.9.0-x86_64-unknown-linux-gnu
-    mv ct-v0.9.0-x86_64-unknown-linux-gnu /usr/local/bin/ct
-
-    yq merge coreos.yaml root.yaml | ct > ignition.json
-
-    wget -q https://raw.github.com/coreos/init/master/bin/coreos-install
-    chmod +x coreos-install
-    ./coreos-install -d /dev/vda -i ignition.json -C stable
-
 # If no valid tag is provided, treat this as a test server
 else
     exit

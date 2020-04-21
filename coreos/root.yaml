@@ -1,5 +1,0 @@
-passwd:
-  users:
-    - name: regan
-      groups:
-        - sudo
