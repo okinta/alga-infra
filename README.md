@@ -25,6 +25,15 @@ To create a new server, run:
 
 Additional setup instructions to load data is located in LastPass.
 
+### Windows
+
+This server runs Windows Server 2019. To create a new server, run:
+
+    ./server windows
+
+Deployment requires server2019.iso to be uploaded to Vultr. This image can be
+found in OneDrive.
+
 ### IQFeed Server
 
 This server runs IQFeed client, allowing other servers within the same private
