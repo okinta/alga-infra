@@ -53,6 +53,7 @@ elif [ $_arg_name = "vultrkv" ]; then
 
 elif [ $_arg_name = "windows" ]; then
     iso="server2019.iso"
+    plan="4096 MB RAM,80 GB SSD,3.00 TB BW"
 
 else
     die "Unknown server type $_arg_name. Available server types are:
