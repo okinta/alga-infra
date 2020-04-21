@@ -19,10 +19,7 @@ if [ $_arg_name = "buildiso" ]; then
     region="New Jersey"
     script="create-live-iso"
 
-elif [ $_arg_name = "coreos" ]; then
-    iso="installcoreos.iso"
-    tag="coreos"
-
+elif [ $_arg_name = "fcos" ]; then
     iso="installcoreos.iso"
     tag="fcos"
 
@@ -52,7 +49,6 @@ elif [ $_arg_name = "windows" ]; then
 else
     die "Unknown server type $_arg_name. Available server types are:
 buildiso
-coreos
 fcos
 iqfeed
 test
