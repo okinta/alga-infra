@@ -1,39 +1,22 @@
 #
-# Installs and configures IQFeed client to run and be accessible within the Vultr private network
+# Installs and configures IQFeed client to run and be accessible within the
+# Vultr private network
 #
 
 param (
-    [Parameter(Mandatory=$true)][string]$apikey,
-    [Parameter(Mandatory=$true)][string]$product,
-    [Parameter(Mandatory=$true)][string]$version,
-    [Parameter(Mandatory=$true)][string]$login,
-    [Parameter(Mandatory=$true)][string]$password
+    [Parameter(Mandatory=$true)][string]$ip
 )
 
 $ErrorActionPreference = "Stop"
-
-$IQFeedVersion = "6_1_0_20"
-
 [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
 
-# Set up Vultr-CLI
-[Environment]::SetEnvironmentVariable("VULTR_API_KEY", $apikey, "User")
-$env:VULTR_API_KEY = $apikey
-Invoke-WebRequest -Uri "https://github.com/vultr/vultr-cli/releases/download/v0.3.0/vultr-cli_0.3.0_windows_64-bit.zip" -OutFile "C:\image\vultr-cli.zip"
-Expand-Archive "C:\image\vultr-cli.zip" -DestinationPath "C:\image"
-Remove-Item "C:\image\vultr-cli.zip" -Force
-
-# Find out what the private IP is for this machine
-$ExternalIP = Get-NetIPAddress -InterfaceAlias "Ethernet" -AddressFamily IPv4
-$Match = C:\image\vultr-cli.exe server list | Select-String -Pattern $ExternalIP.IPAddress -SimpleMatch | Select-Object -First 1
-$VultrID = ($Match.line -split '\s+')[0]
-$ip = C:\image\vultr-cli.exe server info $VultrID | Select-String -Pattern "Internal IP" -SimpleMatch | Select-Object -First 1
-$ip = ($ip.line -split '\s+')[2]
-
-# Configure Vultr private networking
-netsh interface ip set address name="Ethernet 2" static $ip 255.255.0.0 0.0.0.0 1
+$product = Invoke-WebRequest -Uri "http://10.2.96.3:7020/api/kv/iqfeed_product"
+$version = Invoke-WebRequest -Uri "http://10.2.96.3:7020/api/kv/iqfeed_product_version"
+$login = Invoke-WebRequest -Uri "http://10.2.96.3:7020/api/kv/iqfeed_login"
+$password = Invoke-WebRequest -Uri "http://10.2.96.3:7020/api/kv/iqfeed_password"
 
 # Install IQFeed
+$IQFeedVersion = "6_1_0_20"
 Invoke-WebRequest -Uri "http://www.iqfeed.net/iqfeed_client_$IQFeedVersion.exe" -OutFile "C:\image\iqfeed.exe"
 Start-Process -Wait -FilePath "C:\image\iqfeed.exe" -ArgumentList "/S" -PassThru
 Remove-Item "C:\image\iqfeed.exe" -Force
