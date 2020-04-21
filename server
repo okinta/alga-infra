@@ -5,6 +5,7 @@ set -e
 . ./args.sh
 
 app=""
+firewall=""
 include_ssh_key=false
 iso=""
 os=""
@@ -39,6 +40,7 @@ elif [ $_arg_name = "ubuntu" ]; then
     script="setup-ubuntu"
 
 elif [ $_arg_name = "vultrkv" ]; then
+    firewall="coreos"
     iso="installcoreos.iso"
     tag="vultrkv"
 
@@ -64,6 +66,11 @@ command="vultr-cli server create --region $region_id --plan $plan_id --private-n
 if ! [ -z "$app" ]; then
     app_id=$(vultr-cli apps | grep "$app" | awk '{print $1}')
     command="$command --app $app_id"
+fi
+
+if ! [ -z "$firewall" ]; then
+    firewall_group=$(vultr-cli firewall group list | grep "$firewall" | awk '{print $1}')
+    command="$command --firewall-group $firewall_group"
 fi
 
 if [ "$include_ssh_key" = true ] ; then
