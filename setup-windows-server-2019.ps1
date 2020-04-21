@@ -16,7 +16,7 @@ Function Write-Log
 Write-Log "Setting up Windows Server 2019"
 
 # Set up Vultr private networking
-$Metadata = Invoke-WebRequest -Uri "http://169.254.169.254/v1.json" | ConvertTo-Json
+$Metadata = (Invoke-WebRequest -Uri "http://169.254.169.254/v1.json").Content | ConvertFrom-Json
 $ip = $Metadata.interfaces[1].ipv4.address
 
 if ([string]::IsNullOrEmpty($ip)) {
@@ -27,7 +27,16 @@ if ([string]::IsNullOrEmpty($ip)) {
 netsh interface ip set address name="Ethernet 2" static $ip 255.255.0.0 0.0.0.0 1
 Write-Log "Configured private network"
 
-$apikey = Invoke-WebRequest -Uri "http://10.2.96.3:7020/api/kv/vultr_api_key"
+:DoLoop do {
+    Start-Sleep -s 5
+
+    try {
+        $apikey = (Invoke-WebRequest -Uri "http://10.2.96.3:7020/api/kv/vultr_api_key").Content
+    } catch {
+        $apikey = ""
+    }
+}
+until (![string]::IsNullOrEmpty($apikey))
 
 # Set up Vultr-CLI so we can find the tag of this server
 [Environment]::SetEnvironmentVariable("VULTR_API_KEY", $apikey, "User")

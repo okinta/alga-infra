@@ -10,10 +10,10 @@ param (
 $ErrorActionPreference = "Stop"
 [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
 
-$product = Invoke-WebRequest -Uri "http://10.2.96.3:7020/api/kv/iqfeed_product"
-$version = Invoke-WebRequest -Uri "http://10.2.96.3:7020/api/kv/iqfeed_product_version"
-$login = Invoke-WebRequest -Uri "http://10.2.96.3:7020/api/kv/iqfeed_login"
-$password = Invoke-WebRequest -Uri "http://10.2.96.3:7020/api/kv/iqfeed_password"
+$product = (Invoke-WebRequest -Uri "http://10.2.96.3:7020/api/kv/iqfeed_product").Content
+$version = (Invoke-WebRequest -Uri "http://10.2.96.3:7020/api/kv/iqfeed_product_version").Content
+$login = (Invoke-WebRequest -Uri "http://10.2.96.3:7020/api/kv/iqfeed_login").Content
+$password = (Invoke-WebRequest -Uri "http://10.2.96.3:7020/api/kv/iqfeed_password").Content
 
 # Install IQFeed
 $IQFeedVersion = "6_1_0_20"
