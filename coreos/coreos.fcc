@@ -18,6 +18,34 @@ storage:
           address1=$PRIVATE_IP/24
           method=manual
 
+    - path: /var/lib/iptables/rules-save
+      mode: 0644
+      contents:
+        inline: |
+          *filter
+          :INPUT ACCEPT [0:0]
+          :FORWARD ACCEPT [0:0]
+          :OUTPUT ACCEPT [0:0]
+          COMMIT
+
+systemd:
+  units:
+    - name: iptables-restore.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Restore iptables firewall rules
+        Before=iptables-store.service
+        Before=network-pre.target
+        Wants=network-pre.target
+
+        [Service]
+        Type=oneshot
+        ExecStart=/sbin/iptables-restore -w -- /var/lib/iptables/rules-save
+
+        [Install]
+        WantedBy=basic.target
+
 passwd:
   users:
     - name: regan
