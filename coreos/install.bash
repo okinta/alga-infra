@@ -17,6 +17,10 @@ PRIVATE_IP="$(curl -s http://169.254.169.254/v1.json | jq '.interfaces[1].ipv4.a
 export PRIVATE_IP
 echo "export PRIVATE_IP=\"$PRIVATE_IP\"" >> /root/.bashrc
 
+PRIVATE_SUBNET=$(echo "$PRIVATE_IP" | sed "s/\.[^\.]*$//")
+export PRIVATE_SUBNET
+echo "export PRIVATE_SUBNET=\"$PRIVATE_SUBNET\"" >> /root/.bashrc
+
 # Who are we?
 ID="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"
 export ID
