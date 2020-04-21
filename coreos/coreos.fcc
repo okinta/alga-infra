@@ -18,16 +18,6 @@ storage:
           address1=$PRIVATE_IP/24
           method=manual
 
-    - path: /var/lib/iptables/rules-save
-      mode: 0644
-      contents:
-        inline: |
-          *filter
-          :INPUT ACCEPT [0:0]
-          :FORWARD ACCEPT [0:0]
-          :OUTPUT ACCEPT [0:0]
-          COMMIT
-
 systemd:
   units:
     - name: iptables-restore.service
@@ -41,7 +31,11 @@ systemd:
 
         [Service]
         Type=oneshot
-        ExecStart=/sbin/iptables-restore -w -- /var/lib/iptables/rules-save
+        ExecStart=echo "*filter\
+        ::INPUT ACCEPT [0:0]\
+        ::FORWARD ACCEPT [0:0]\
+        ::OUTPUT ACCEPT [0:0]\
+        :COMMIT" | /usr/sbin/iptables-restore
 
         [Install]
         WantedBy=basic.target
