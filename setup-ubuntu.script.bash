@@ -29,6 +29,17 @@ HOME="/root" ZSH="/root/.oh-my-zsh" sh install.sh
 rm -f install.sh
 echo "Finished configuring zsh"
 
+# Install the GUI
+apt install -y xorg
+apt install -y --no-install-recommends lightdm-gtk-greeter
+apt install -y --no-install-recommends lightdm
+apt install -y --no-install-recommends lxde-icon-theme
+apt install -y --no-install-recommends lxde-core
+apt install -y --no-install-recommends lxde-common
+apt install -y --no-install-recommends policykit-1 lxpolkit
+apt install -y --no-install-recommends lxsession-logout
+apt install -y --no-install-recommends gvfs-backends
+
 # Update to latest software then reboot
 apt upgrade -y
 apt autoremove -y
