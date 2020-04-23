@@ -50,9 +50,8 @@ To create a new server, run:
 This server comes with docker pre-installed and is able to communicate with
 other servers within the same private network.
 
-`setup-ubuntu.bash` contains the startup script to add to Vultr. This should be
-named `setup-ubuntu` within Vultr. Replace `[VULTR_API_KEY]` with your Vultr
-API key.
+`vultr-scripts/setup-ubuntu.bash` contains the startup script to add to Vultr.
+This should be named `setup-ubuntu` within Vultr.
 
 To create a new server, run:
 
@@ -68,8 +67,8 @@ To spin up servers running Fedora CoreOS (FCOS), a few steps are required.
 
 #### Creating the ISO
 
-`coreos/create-live-iso.bash` contains the startup script in order to create a
-new ISO. This should be named `create-live-iso` within Vultr. Replace
+`vultr-scripts/create-live-iso.bash` contains the startup script in order to
+create a new ISO. This should be named `create-live-iso` within Vultr. Replace
 `[VULTR_API_KEY]` with your Vultr API key.
 
 To create the ISO, run:
