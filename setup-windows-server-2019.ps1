@@ -55,7 +55,7 @@ Write-Log "Got tag: $tag"
 
 # Install IQFeed if that's what the server is destined for
 if ("iqfeed" -eq $tag) {
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/okinta/vultr-scripts/master/setup-windows-iqfeed.ps1" -OutFile "C:\image\setup-windows-iqfeed.ps1"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/okinta/vultr-scripts/master/iqfeed/setup-windows-iqfeed.ps1" -OutFile "C:\image\setup-windows-iqfeed.ps1"
 
     Write-Log "Installing IQFeed"
     Start-Process -Wait -FilePath "powershell" -ArgumentList "C:\image\setup-windows-iqfeed.ps1", $ip
