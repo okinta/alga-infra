@@ -59,11 +59,6 @@ elif [ $_arg_name = "ubuntu" ]; then
     include_ssh_key=true
     script="setup-ubuntu"
 
-elif [ $_arg_name = "vultrkv" ]; then
-    firewall="coreos"
-    iso="installcoreos.iso"
-    tag="vultrkv"
-
 elif [ $_arg_name = "windows" ]; then
     iso="server2019.iso"
     plan="4096 MB RAM,80 GB SSD,3.00 TB BW"
@@ -76,7 +71,6 @@ iqfeed
 stack-*
 test
 ubuntu
-vultrkv
 windows"
 fi
 
