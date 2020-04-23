@@ -15,11 +15,11 @@ script=""
 tag=""
 
 function assert_repo_exists {
-    if ! [ -z "$1" ]; then
+    if [ -z "$1" ]; then
         die "argument must be provided"
     fi
 
-    url="https://github.com/okinta/stack-$1/blob/master/coreos.fcc"
+    url="https://github.com/okinta/$1/blob/master/coreos.fcc"
     if curl --output /dev/null --silent --head --fail "$url"; then
         true
     else
