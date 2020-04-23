@@ -34,11 +34,11 @@ echo "Tag: $TAG"
 wget -q https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc -O coreos.fcc.template
 envsubst < coreos.fcc.template > coreos.fcc
 
-if [ "$TAG" = "vultrkv" ]; then
-    echo "Installing vultrkv server"
+if [[ "$TAG" == stack* ]]; then
+    echo "Installing $TAG"
 
-    wget -q https://raw.githubusercontent.com/okinta/vultrkv/master/coreos.fcc -O vultrkv.fcc
-    yq merge coreos.fcc vultrkv.fcc | fcct > coreos.ign
+    wget -q "https://raw.githubusercontent.com/okinta/$1/master/coreos.fcc" -O stack.fcc
+    yq merge coreos.fcc stack.fcc | fcct > coreos.ign
     coreos-installer install /dev/vda -i coreos.ign
 
 elif [ "$TAG" = "fcos" ]; then
