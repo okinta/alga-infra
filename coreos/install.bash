@@ -37,7 +37,7 @@ envsubst < coreos.fcc.template > coreos.fcc
 if [[ "$TAG" == stack* ]]; then
     echo "Installing $TAG"
 
-    wget -q "https://raw.githubusercontent.com/okinta/$1/master/coreos.fcc" -O stack.fcc
+    wget -q "https://raw.githubusercontent.com/okinta/$TAG/master/coreos.fcc" -O stack.fcc
     yq merge coreos.fcc stack.fcc | fcct > coreos.ign
     coreos-installer install /dev/vda -i coreos.ign
 
