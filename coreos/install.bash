@@ -38,14 +38,14 @@ if [[ "$TAG" == stack* ]]; then
     echo "Installing $TAG"
 
     wget -q "https://raw.githubusercontent.com/okinta/$TAG/master/coreos.fcc" -O stack.fcc
-    yq merge coreos.fcc stack.fcc | fcct > coreos.ign
+    yq merge --append coreos.fcc stack.fcc | fcct > coreos.ign
     coreos-installer install /dev/vda -i coreos.ign
 
 elif [ "$TAG" = "fcos" ]; then
     echo "Installing default fcos server with root access"
 
     wget -q https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/root.fcc
-    yq merge coreos.fcc root.fcc | fcct > coreos.ign
+    yq merge --append coreos.fcc root.fcc | fcct > coreos.ign
     coreos-installer install /dev/vda -i coreos.ign
 
 # If no valid tag is provided, treat this as a test server
