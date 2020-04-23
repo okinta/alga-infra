@@ -2,6 +2,21 @@ variant: fcos
 version: 1.0.0
 storage:
   files:
+
+    # Disable automatic updates. We don't want containers to automatically
+    # restart. The intention is to keep infrastructure completely immutable.
+    # Machines should be provisioned on a regular basis (i.e. no machine should
+    # live longer than a week). When a machine is provisioned, it'll
+    # automatically boot with the latest OS.
+    # https://github.com/coreos/zincati/blob/0.0.6/docs/usage/auto-updates.md#disabling-auto-updates
+    - path: /etc/zincati/config.d/90-disable-auto-updates.toml
+      mode: 0644
+      contents:
+        inline: |
+          [updates]
+          enabled = false
+
+    # Configure private networking
     - path: /etc/NetworkManager/system-connections/private-net.nmconnection
       mode: 0600
       contents:
@@ -20,6 +35,9 @@ storage:
 
 systemd:
   units:
+
+    # Set firewall rules upon booting. This isn't currently working, but
+    # keeping anyway. For now the firewall is managed by Vultr.
     - name: iptables-restore.service
       enabled: true
       contents: |
