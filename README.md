@@ -14,6 +14,15 @@ This repository allows the creation of different types of servers within Vultr.
 
 See `./server --help` for more usage information.
 
+### Deploying a Stack
+
+To deploy a stack, run:
+
+    ./server stack-[name]
+
+If the stack doesn't exist, this command will fail. If the stack does exist,
+its configuration will be loaded and deployed.
+
 ### Vultrkv Server
 
 This server runs a simple key value store, allowing other servers to save and

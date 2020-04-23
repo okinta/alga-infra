@@ -14,6 +14,19 @@ region="Chicago"
 script=""
 tag=""
 
+function assert_repo_exists {
+    if ! [ -z "$1" ]; then
+        die "argument must be provided"
+    fi
+
+    url="https://github.com/okinta/stack-$1/blob/master/coreos.fcc"
+    if curl --output /dev/null --silent --head --fail "$url"; then
+        true
+    else
+        die "$1 does not exist"
+    fi
+}
+
 if [ $_arg_name = "buildiso" ]; then
     include_ssh_key=true
     os="Ubuntu 18.04 x64"
@@ -28,6 +41,13 @@ elif [ $_arg_name = "iqfeed" ]; then
     iso="server2019.iso"
     plan="4096 MB RAM,80 GB SSD,3.00 TB BW"
     tag="iqfeed"
+
+elif [[ $_arg_name == stack* ]]; then
+    assert_repo_exists $_arg_name
+
+    firewall="coreos"
+    iso="installcoreos.iso"
+    tag=$_arg_name
 
 elif [ $_arg_name = "test" ]; then
     iso="installcoreos.iso"
@@ -53,6 +73,7 @@ else
 buildiso
 fcos
 iqfeed
+stack-*
 test
 ubuntu
 vultrkv
