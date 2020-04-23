@@ -44,8 +44,8 @@ rm -f vultr-cli.tar.gz
 # Finished installing tools
 
 # On boot, run install-coreos.bash
-echo "#\!/usr/bin/env bash
-sh -c \"\$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/install.bash)\" > /tmp/install.log 2>&1" > /etc/rc.local
+echo '#!/usr/bin/env bash
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/install.bash)" > /tmp/install.log 2>&1' > /etc/rc.local
 chmod +x /etc/rc.local
 
 # Build the ISO
