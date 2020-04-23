@@ -61,6 +61,9 @@ Get-LocalUser | Set-LocalUser -Password (ConvertTo-SecureString -AsPlainText $ne
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
 Set-ItemProperty $RegPath "DefaultPassword" -Value $newPassword -type String
 
+# Configure Remote Desktop
+Install-WindowsFeature -Name RDS-RD-Server
+
 # Install IQFeed if that's what the server is destined for
 if ("iqfeed" -eq $tag) {
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/okinta/vultr-scripts/master/iqfeed/setup-windows-iqfeed.ps1" -OutFile "C:\image\setup-windows-iqfeed.ps1"
@@ -70,3 +73,4 @@ if ("iqfeed" -eq $tag) {
 }
 
 Write-Log "Done"
+Restart-Computer -Force
