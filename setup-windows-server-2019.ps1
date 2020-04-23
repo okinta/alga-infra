@@ -18,6 +18,7 @@ Write-Log "Setting up Windows Server 2019"
 # Set up Vultr private networking
 $Metadata = (Invoke-WebRequest -Uri "http://169.254.169.254/v1.json").Content | ConvertFrom-Json
 $ip = $Metadata.interfaces[1].ipv4.address
+$externalIP = $Metadata.interfaces[0].ipv4.address
 
 if ([string]::IsNullOrEmpty($ip)) {
     Write-Log "Cannot find private ip address. Exiting"
@@ -32,7 +33,7 @@ Write-Log "Configured private network"
     Start-Sleep -s 5
 
     try {
-        $apikey = (Invoke-WebRequest -Uri "http://10.2.96.3:7020/api/kv/vultr_api_key").Content
+        $apikey = (Invoke-WebRequest -Uri "http://vault.in.okinta.ge:7020/api/kv/vultr_api_key").Content
     } catch {
         $apikey = ""
     }
@@ -52,6 +53,13 @@ $id = $Metadata.instanceid
 $tag = C:\image\vultr-cli.exe server info $id | Select-String -Pattern "Tag" -SimpleMatch | Select-Object -First 1
 $tag = ($tag.line -split '\s+')[1]
 Write-Log "Got tag: $tag"
+
+# Create a new password, store it in the Vault
+$newPassword = -join ((33..126) | Get-Random -Count 32 | % {[char]$_})
+Invoke-WebRequest -Uri "http://vault.in.okinta.ge:7020/api/kv/windows_password_$externalIP" -Method PUT -Body $newPassword
+Get-LocalUser | Set-LocalUser -Password (ConvertTo-SecureString -AsPlainText $newPassword -Force)
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
+Set-ItemProperty $RegPath "DefaultPassword" -Value $newPassword -type String
 
 # Install IQFeed if that's what the server is destined for
 if ("iqfeed" -eq $tag) {
