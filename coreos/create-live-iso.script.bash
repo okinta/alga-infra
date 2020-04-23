@@ -14,53 +14,46 @@ fi
 # Install tools into the ISO that might be used
 #
 
-apt install -y jq unzip
+apt update
+apt install -y \
+    gettext-base \
+    jq \
+    unzip
 
 # coreos-installer
-wget -q https://github.com/okinta/coreos-installer-docker/releases/download/0.1.3/coreos-installer
-chmod +x coreos-installer
-mv coreos-installer /usr/local/bin
-
-# envsubst
-curl -sL https://github.com/a8m/envsubst/releases/download/v1.1.0/envsubst-`uname -s`-`uname -m` -o envsubst
-chmod +x envsubst
-mv envsubst /usr/local/bin
+wget -q -O /usr/local/bin/coreos-installer https://s3.okinta.ge/coreos-installer-ubuntu-0.1.3
+chmod +x /usr/local/bin/coreos-installer
 
 # fcct
-wget -q https://github.com/coreos/fcct/releases/download/v0.5.0/fcct-x86_64-unknown-linux-gnu
-chmod +x fcct-x86_64-unknown-linux-gnu
-mv fcct-x86_64-unknown-linux-gnu /usr/local/bin/fcct
+wget -q -O /usr/local/bin/fcct https://s3.okinta.ge/fcct-x86_64-unknown-linux-gnu-0.5.0
+chmod +x /usr/local/bin/fcct
 
 # yq
-wget -q https://github.com/mikefarah/yq/releases/download/3.3.0/yq_linux_amd64
-chmod +x yq_linux_amd64
-mv yq_linux_amd64 /usr/local/bin/yq
+wget -q -O /usr/local/bin/yq https://s3.okinta.ge/yq_linux_amd64_3.3.0
+chmod +x /usr/local/bin/yq
 
 # vultr-cli
 export VULTR_API_KEY="$1"
 echo "export VULTR_API_KEY=$1" >> /root/.bashrc
-VULTR_CLI_VERSION="0.3.0"
-wget -q "https://github.com/vultr/vultr-cli/releases/download/v0.3.0/vultr-cli_${VULTR_CLI_VERSION}_linux_64-bit.tar.gz"
-tar -xzf "vultr-cli_${VULTR_CLI_VERSION}_linux_64-bit.tar.gz"
-mv ./vultr-cli /usr/local/bin/
-rm -f "vultr-cli_${VULTR_CLI_VERSION}_linux_64-bit.tar.gz"
+wget -q -O vultr-cli.tar.gz https://s3.okinta.ge/vultr-cli_0.3.0_linux_64-bit.tar.gz
+tar -xzf vultr-cli.tar.gz -C /usr/local/bin
+chmod +x /usr/local/bin/vultr-cli
+rm -f vultr-cli.tar.gz
 
 #
 # Finished installing tools
 
 # On boot, run install-coreos.bash
-echo '#!/usr/bin/env bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/install.bash)" > /tmp/install.log 2>&1' > /etc/rc.local
+echo "#\!/usr/bin/env bash
+sh -c \"\$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/install.bash)\" > /tmp/install.log 2>&1" > /etc/rc.local
 chmod +x /etc/rc.local
 
 # Build the ISO
-VERSION="2.3"
-apt install -y mkisofs unzip
-wget "https://github.com/Tomas-M/linux-live/archive/v$VERSION.zip"
-unzip "v$VERSION.zip"
-mv "linux-live-$VERSION" /tmp
-rm -f "v$VERSION.zip"
-/tmp/linux-live-$VERSION/build
+apt install -y mkisofs
+wget -q -O linux-live.zip https://s3.okinta.ge/linux-live-2.3.zip
+unzip -q -d /tmp linux-live.zip
+rm -f linux-live.zip
+/tmp/linux-live-2.3/build
 /tmp/gen_linux_iso.sh
 
 # Host the ISO file so Vultr can download it
@@ -71,7 +64,7 @@ mv /tmp/linux-x86_64.iso /var/www/html/installcoreos.iso
 # Delete the old ISO if it exists
 image_id=$(vultr-cli iso private | grep installcoreos | awk '{print $1}')
 if ! [ -z "$image_id" ]; then
-    vultr-cli iso delete $image_id
+    vultr-cli iso delete "$image_id"
 fi
 
 # Tell Vultr to download the ISO
@@ -89,4 +82,4 @@ done
 
 # Destroy self since our existence no longer serves any purpose
 id="$(curl -s http://169.254.169.254/v1.json | jq ".instanceid" | tr -d '"')"
-vultr-cli server delete $id
+vultr-cli server delete "$id"
