@@ -62,5 +62,10 @@ systemd:
 passwd:
   users:
     - name: regan
+
+      # Allow viewing of systemd logs to allow diagnosing issues
+      groups:
+        - systemd-journal
+
       ssh_authorized_keys:
         - "$SSH_KEY"
