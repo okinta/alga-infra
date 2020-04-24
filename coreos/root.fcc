@@ -1,5 +1,5 @@
 passwd:
   users:
     - name: regan
-      groups:
-        - sudo
+      ssh_authorized_keys:
+        - "$SSH_KEY"

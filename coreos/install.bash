@@ -31,7 +31,8 @@ echo "export TAG=\"$TAG\"" >> /root/.bashrc
 echo "Tag: $TAG"
 
 # Get the base fcc config ready
-wget -q https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc -O coreos.fcc.template
+wget -q -O coreos.fcc.template \
+    https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc
 envsubst < coreos.fcc.template > coreos.fcc
 
 if [[ "$TAG" == stack* ]]; then
@@ -44,8 +45,14 @@ if [[ "$TAG" == stack* ]]; then
 elif [ "$TAG" = "fcos" ]; then
     echo "Installing default fcos server with root access"
 
-    wget -q https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/root.fcc
-    yq merge --append coreos.fcc root.fcc | fcct > coreos.ign
+    wget -q -O root.fcc.template \
+        https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/root.fcc
+    envsubst < root.fcc.template > root.fcc
+
+    # Replace the user and add a user with root permission
+    yq delete coreos.fcc passwd.users > coreos.nousers.fcc
+    yq merge --append coreos.nousers.fcc root.fcc | fcct > coreos.ign
+
     coreos-installer install /dev/vda -i coreos.ign
 
 # If no valid tag is provided, treat this as a test server
