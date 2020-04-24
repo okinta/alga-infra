@@ -33,32 +33,6 @@ storage:
           address1=$PRIVATE_IP/24
           method=manual
 
-systemd:
-  units:
-
-    # Set firewall rules upon booting. This isn't currently working, but
-    # keeping anyway. For now the firewall is managed by Vultr.
-    - name: iptables-restore.service
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Restore iptables firewall rules
-        Before=iptables-store.service
-        Before=network-pre.target
-        Wants=network-pre.target
-
-        [Service]
-        Type=oneshot
-        ExecStart=echo "*filter\
-        ::INPUT ACCEPT [0:0]\
-        ::FORWARD ACCEPT [0:0]\
-        ::OUTPUT ACCEPT [0:0]\
-        :-A INPUT -p tcp -m tcp --dport 22 -j ACCEPT\
-        :COMMIT" | /usr/sbin/iptables-restore
-
-        [Install]
-        WantedBy=basic.target
-
 passwd:
   users:
     - name: regan
