@@ -16,23 +16,6 @@ storage:
           [updates]
           enabled = false
 
-    # Configure private networking
-    - path: /etc/NetworkManager/system-connections/private-net.nmconnection
-      mode: 0600
-      contents:
-        inline: |
-          [connection]
-          id=private-net
-          type=ethernet
-          interface-name=eth1
-
-          [ethernet]
-          mtu=1450
-
-          [ipv4]
-          address1=$PRIVATE_IP/24
-          method=manual
-
 passwd:
   users:
     - name: regan
