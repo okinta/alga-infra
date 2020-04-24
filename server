@@ -29,7 +29,7 @@ function assert_repo_exists {
 
 if [ $_arg_name = "buildiso" ]; then
     include_ssh_key=true
-    os="Ubuntu 18.04 x64"
+    os="Debian 10 x64"
     region="New Jersey"
     script="create-live-iso"
 
