@@ -53,6 +53,11 @@ apt install -y mkisofs
 wget -q -O linux-live.zip https://s3.okinta.ge/linux-live-2.3.zip
 unzip -q -d /tmp linux-live.zip
 rm -f linux-live.zip
+
+# Remove second boot option so we can boot immediately instead of waiting
+head -13 /tmp/linux-live-2.3/bootfiles/syslinux.cfg > syslinux.cfg
+mv syslinux.cfg /tmp/linux-live-2.3/bootfiles/syslinux.cfg
+
 /tmp/linux-live-2.3/build
 /tmp/gen_linux_iso.sh
 
