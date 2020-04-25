@@ -59,6 +59,7 @@ rm -f linux-live.zip
 
 # Host the ISO file so Vultr can download it
 apt install -y nginx
+ufw allow "Nginx HTTP"
 mv /tmp/linux-x86_64.iso /var/www/html/installcoreos.iso
 
 # Delete the old ISO if it exists
