@@ -36,7 +36,7 @@ wget -q -O coreos.fcc.template \
 envsubst < coreos.fcc.template > coreos.fcc
 
 # If we're not establishing the Vault, then load our private registry credentials
-if [ "$TAG" != "stack_vault" ]; then
+if [ "$TAG" != "stack-vault" ]; then
 
     # Pull registry credentials from the Vault
     echo "Loading container registry credentials from Vault"
