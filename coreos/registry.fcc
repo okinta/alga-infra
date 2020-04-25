@@ -1,0 +1,31 @@
+storage:
+  files:
+
+    # Store private container registry credentials
+    - path: /etc/containerauth
+      mode: 0600
+      contents:
+        inline: |
+          LOGIN=$REGISTRY_LOGIN
+          PASSWORD=$REGISTRY_PASSWORD
+          REGISTRY=$REGISTRY_NAME
+
+systemd:
+  units:
+
+    # Authenticate with private container registry upon booting
+    - name: containerauth.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Authenticates with private container registry
+        After=network-online.target
+        Wants=network-online.target
+
+        [Service]
+        Type=oneshot
+        EnvironmentFile=/etc/containerauth
+        ExecStart=echo "$PASSWORD" | podman login "$REGISTRY" -u $"LOGIN" --password-stdin
+
+        [Install]
+        WantedBy=multi-user.target
