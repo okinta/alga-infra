@@ -31,7 +31,7 @@ This repository provides the tools in order to deploy a stack.
 
 To validate the script, use shellcheck:
 
-    shellcheck server
+    shellcheck -x server
 
 ## Servers
 
@@ -47,17 +47,6 @@ To deploy a stack, run:
 
 If the stack doesn't exist, this command will fail. If the stack does exist,
 its configuration will be loaded and deployed.
-
-### Vultrkv Server
-
-This server runs a simple key value store, allowing other servers to save and
-retrieve configuration information.
-
-To create a new server, run:
-
-    ./server vultrkv
-
-Additional setup instructions to load data is located in LastPass.
 
 ### Windows
 
@@ -81,8 +70,8 @@ To create a new server, run:
 
 ### Ubuntu Server
 
-This server comes with docker pre-installed and is able to communicate with
-other servers within the same private network.
+This server comes with docker and a GUI pre-installed. It's able to communicate
+with other servers within the same private network.
 
 `vultr-scripts/setup-ubuntu.bash` contains the startup script to add to Vultr.
 This should be named `setup-ubuntu` within Vultr.
@@ -112,7 +101,7 @@ To create the ISO, run:
 After many minutes a new ISO will be created in Vultr called
 `installcoreos.iso`.
 
-#### Creatimg a Default FCOS Server with Root Access
+#### Creating a Default FCOS Server with Root Access
 
 A default FCOS server with root access can be spun up by running:
 
@@ -130,7 +119,7 @@ A test FCOS server can be spun up by running:
 After the machine is created, you'll be able to SSH into the machine. To
 install CoreOS, run:
 
-    ./coreos-installer install /dev/vda [-i ignition-file.ign]
+    coreos-installer install /dev/vda [-i ignition-file.ign]
     reboot
 
 After rebooting, the new FCOS server will be running.
