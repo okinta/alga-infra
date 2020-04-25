@@ -16,10 +16,8 @@ fi
 
 apt update
 apt install -y \
-    genisoimage \
     gettext-base \
     jq \
-    squashfs-tools \
     unzip
 
 # coreos-installer
@@ -51,6 +49,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/mas
 chmod +x /etc/rc.local
 
 # Build the ISO
+apt install -y mkisofs
 wget -q -O linux-live.zip https://s3.okinta.ge/linux-live-2.3.zip
 unzip -q -d /tmp linux-live.zip
 rm -f linux-live.zip
