@@ -8,6 +8,7 @@ app=""
 firewall=""
 include_ssh_key=false
 iso=""
+label=""
 os=""
 plan="1024 MB RAM,25 GB SSD,1.00 TB BW"
 region="Chicago"
@@ -29,16 +30,19 @@ function assert_repo_exists {
 
 if [ $_arg_name = "buildiso" ]; then
     include_ssh_key=true
+    label="isobuilder"
     os="Ubuntu 18.04 x64"
     region="New Jersey"
     script="create-live-iso"
 
 elif [ $_arg_name = "fcos" ]; then
     iso="installcoreos.iso"
+    label="fcos"
     tag="fcos"
 
 elif [ $_arg_name = "iqfeed" ]; then
     iso="server2019.iso"
+    label="iqfeed"
     plan="4096 MB RAM,80 GB SSD,3.00 TB BW"
     tag="iqfeed"
 
@@ -47,20 +51,24 @@ elif [[ $_arg_name == stack* ]]; then
 
     firewall="coreos"
     iso="installcoreos.iso"
+    label=$_arg_name
     tag=$_arg_name
 
 elif [ $_arg_name = "test" ]; then
     iso="installcoreos.iso"
+    label="test"
     tag="test"
 
 elif [ $_arg_name = "ubuntu" ]; then
     # Using docker app because it's simply ubuntu with docker pre-installed
     app="Docker on Ubuntu 18.04 x64"
     include_ssh_key=true
+    labe="ubuntu"
     script="setup-ubuntu"
 
 elif [ $_arg_name = "windows" ]; then
     iso="server2019.iso"
+    label="windows"
     plan="4096 MB RAM,80 GB SSD,3.00 TB BW"
 
 else
@@ -96,6 +104,10 @@ fi
 if ! [ -z "$iso" ]; then
     iso_id=$(vultr-cli iso private | grep "$iso" | awk '{print $1}')
     command="$command --iso $iso_id"
+fi
+
+if ! [ -z "$label" ]; then
+    command="$command --label $label"
 fi
 
 if ! [ -z "$os" ]; then
