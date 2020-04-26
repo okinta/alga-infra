@@ -5,7 +5,6 @@
 #
 
 # Configure this machine's private network
-apt install -y jq
 private_ip="$(curl -s http://169.254.169.254/v1.json | jq '.interfaces[1].ipv4.address' | tr -d '"')"
 echo "network:
   version: 2
@@ -55,7 +54,7 @@ if [ "$TAG" != "stack-vault" ]; then
     REGISTRY_LOGIN=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_user)
     export REGISTRY_LOGIN
 
-    if [ -v "REGISTRY_LOGIN" ]; then
+    if [ -v "$REGISTRY_LOGIN" ]; then
         echo "Could not connect to Vault"
         exit 1
     fi
