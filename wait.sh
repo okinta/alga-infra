@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
+ip="$1"
 while true; do
     sleep 10
-    timeout 10s ssh -oStrictHostKeyChecking=no "$1" exit &> /dev/null
-    if [ $? -eq 0 ]; then
+    if timeout 10s ssh -oStrictHostKeyChecking=no "$ip" exit &> /dev/null
+    then
         break
     fi
 done
 
-ssh-keygen -f "~/.ssh/known_hosts" -R "$1" &> /dev/null
+ssh-keygen -f "$HOME/.ssh/known_hosts" -R "$ip" &> /dev/null
 echo "Server is ready"
