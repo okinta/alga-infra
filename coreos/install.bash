@@ -51,15 +51,15 @@ if [ "$TAG" != "stack-vault" ]; then
 
     # Pull registry credentials from the Vault
     echo "Loading container registry credentials from Vault"
-    REGISTRY_LOGIN=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_user)
+    REGISTRY_LOGIN=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_login)
     export REGISTRY_LOGIN
+    echo "export REGISTRY_LOGIN=\"$REGISTRY_LOGIN\"" >> /root/.bashrc
 
     if [ -v "$REGISTRY_LOGIN" ]; then
         echo "Could not connect to Vault"
         exit 1
     fi
 
-    echo "export REGISTRY_LOGIN=\"$REGISTRY_LOGIN\"" >> /root/.bashrc
     REGISTRY_NAME=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_name)
     export REGISTRY_NAME
     echo "export REGISTRY_NAME=\"$REGISTRY_NAME\"" >> /root/.bashrc
