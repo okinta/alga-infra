@@ -123,3 +123,14 @@ install CoreOS, run:
     reboot
 
 After rebooting, the new FCOS server will be running.
+
+## Development
+
+The `server` script makes use of [argbash][1] for argument parsing. Modify
+`args.m4` to adjust arguments then run:
+
+    argbash -o args.sh args.m4
+
+This will change the arguments received by the `server` script.
+
+[1]: https://argbash.readthedocs.io/en/latest/

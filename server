@@ -138,3 +138,7 @@ while [ -z "$ip" ] || [ "$ip" = "0.0.0.0" ]; do
     ip=$(vultr-cli server info "$id" | grep "Main IP" | awk '{print $3}')
 done
 echo "$ip"
+
+if [ $_arg_wait = on ]; then
+    ./wait.sh "$ip"
+fi
