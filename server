@@ -2,7 +2,19 @@
 
 set -e
 
-. ./args.sh
+# Get the directory of this script
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+    DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+    SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+
+# shellcheck source=args.sh
+. "$DIR/args.sh"
+# shellcheck source=functions.sh
+. "$DIR/functions.sh"
 
 app=""
 firewall=""
@@ -14,33 +26,6 @@ plan="1024 MB RAM,25 GB SSD,1.00 TB BW"
 region="Chicago"
 script=""
 tag=""
-
-function assert_repo_exists {
-    if [ -z "$1" ]; then
-        die "argument must be provided"
-    fi
-
-    url="https://github.com/okinta/$1/blob/master/coreos.fcc"
-    if curl --output /dev/null --silent --head --fail "$url"; then
-        true
-    else
-        die "$1 does not exist"
-    fi
-}
-
-function wait {
-    ip="$1"
-    while true; do
-        sleep 10
-        if timeout 10s ssh -oStrictHostKeyChecking=no "$ip" exit &> /dev/null
-        then
-            break
-        fi
-    done
-
-    ssh-keygen -f "$HOME/.ssh/known_hosts" -R "$ip" &> /dev/null
-    echo "Server is ready"
-}
 
 if [ $_arg_name = "buildiso" ]; then
     include_ssh_key=true
