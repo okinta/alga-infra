@@ -4,6 +4,8 @@
 # Installs FCOS on a machine
 #
 
+pwd
+
 # Configure this machine's private network
 private_ip="$(curl -s http://169.254.169.254/v1.json | jq '.interfaces[1].ipv4.address' | tr -d '"')"
 echo "network:
@@ -51,10 +53,10 @@ if [ "$TAG" != "stack-vault" ]; then
 
     # Pull registry credentials from the Vault
     echo "Loading container registry credentials from Vault"
-    login=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_login)
+    REGISTRY_LOGIN=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_login)
     export REGISTRY_LOGIN
 
-    if [ -v "$REGISTRY_LOGIN" ]; then
+    if [ -z "$REGISTRY_LOGIN" ]; then
         echo "Could not connect to Vault"
         exit 1
     fi
