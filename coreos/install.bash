@@ -1,10 +1,22 @@
 #!/usr/bin/env bash
 
-set -e
-
 #
 # Installs FCOS on a machine
 #
+
+# Configure this machine's private network
+apt install -y jq
+private_ip="$(curl -s http://169.254.169.254/v1.json | jq '.interfaces[1].ipv4.address' | tr -d '"')"
+echo "network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ens7:
+      mtu: 1450
+      dhcp4: no
+      addresses: [$private_ip/16]" > /etc/netplan/10-ens7.yaml
+netplan apply
+echo "Finished configuring private network"
 
 VULTR_API_KEY=$(grep "export VULTR_API_KEY" < /root/.bashrc | awk '{print $2}' | awk -F "=" '{print $2}')
 export VULTR_API_KEY
@@ -42,6 +54,12 @@ if [ "$TAG" != "stack-vault" ]; then
     echo "Loading container registry credentials from Vault"
     REGISTRY_LOGIN=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_user)
     export REGISTRY_LOGIN
+
+    if [ -v "REGISTRY_LOGIN" ]; then
+        echo "Could not connect to Vault"
+        exit 1
+    fi
+
     echo "export REGISTRY_LOGIN=\"$REGISTRY_LOGIN\"" >> /root/.bashrc
     REGISTRY_NAME=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_name)
     export REGISTRY_NAME
