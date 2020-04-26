@@ -25,7 +25,7 @@ systemd:
         [Service]
         Type=oneshot
         EnvironmentFile=/etc/containerauth
-        ExecStart=echo "$PASSWORD" | podman login "$REGISTRY" -u $"LOGIN" --password-stdin
+        ExecStart=echo "$PASSWORD" | podman login "$REGISTRY" -u "$LOGIN" --password-stdin
 
         [Install]
         WantedBy=multi-user.target

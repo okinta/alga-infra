@@ -53,7 +53,6 @@ if [ "$TAG" != "stack-vault" ]; then
     echo "Loading container registry credentials from Vault"
     REGISTRY_LOGIN=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_login)
     export REGISTRY_LOGIN
-    echo "export REGISTRY_LOGIN=\"$REGISTRY_LOGIN\"" >> /root/.bashrc
 
     if [ -v "$REGISTRY_LOGIN" ]; then
         echo "Could not connect to Vault"
@@ -62,15 +61,15 @@ if [ "$TAG" != "stack-vault" ]; then
 
     REGISTRY_NAME=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_name)
     export REGISTRY_NAME
-    echo "export REGISTRY_NAME=\"$REGISTRY_NAME\"" >> /root/.bashrc
+
     REGISTRY_PASSWORD=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_password)
     export REGISTRY_PASSWORD
-    echo "export REGISTRY_PASSWORD=\"$REGISTRY_PASSWORD\"" >> /root/.bashrc
 
     # Inject the registry credentials into the coreos configuration
     wget -q -O registry.fcc.template \
         https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/registry.fcc
-    envsubst < registry.fcc.template > registry.fcc
+    envsubst '${REGISTRY_LOGIN},${REGISTRY_NAME},${REGISTRY_PASSWORD}' \
+        < registry.fcc.template > registry.fcc
     yq merge --append coreos.fcc registry.fcc > coreos.merged.fcc
     mv coreos.merged.fcc coreos.fcc
     rm -f registry.fc*
