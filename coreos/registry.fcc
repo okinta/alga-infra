@@ -1,4 +1,5 @@
 storage:
+  files:
     - path: /etc/containers/auth.json
       mode: 0640
       contents:
