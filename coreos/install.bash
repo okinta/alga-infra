@@ -64,7 +64,7 @@ if [ "$TAG" != "stack-vault" ]; then
 
     password=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_password)
 
-    CONTAINER_REGISTRY_AUTH=$(echo -n "$login:$password" | base64 -e)
+    CONTAINER_REGISTRY_AUTH=$(echo -n "$login:$password" | base64)
     export CONTAINER_REGISTRY_AUTH
 
     # Inject the registry credentials into the coreos configuration
