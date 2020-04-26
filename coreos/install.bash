@@ -4,8 +4,6 @@
 # Installs FCOS on a machine
 #
 
-pwd
-
 # Configure this machine's private network
 private_ip="$(curl -s http://169.254.169.254/v1.json | jq '.interfaces[1].ipv4.address' | tr -d '"')"
 echo "network:
@@ -30,7 +28,7 @@ PRIVATE_IP="$(curl -s http://169.254.169.254/v1.json | jq '.interfaces[1].ipv4.a
 export PRIVATE_IP
 echo "export PRIVATE_IP=\"$PRIVATE_IP\"" >> /root/.bashrc
 
-PRIVATE_SUBNET="$(echo "$PRIVATE_IP" | sed "s/\.[^\.]*$//").0"
+PRIVATE_SUBNET="$(sed "s/\.[^\.]*$//" <<< "$PRIVATE_IP").0"
 export PRIVATE_SUBNET
 echo "export PRIVATE_SUBNET=\"$PRIVATE_SUBNET\"" >> /root/.bashrc
 
@@ -53,21 +51,21 @@ if [ "$TAG" != "stack-vault" ]; then
 
     # Pull registry credentials from the Vault
     echo "Loading container registry credentials from Vault"
-    REGISTRY_LOGIN=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_login)
-    export REGISTRY_LOGIN
 
-    if [ -z "$REGISTRY_LOGIN" ]; then
+    CONTAINER_REGISTRY=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_name)
+    export CONTAINER_REGISTRY
+    echo "export CONTAINER_REGISTRY=\"$CONTAINER_REGISTRY\"" >> /root/.bashrc
+
+    if [ -z "$CONTAINER_REGISTRY" ]; then
         echo "Could not connect to Vault"
         exit 1
     fi
 
-    CONTAINER_REGISTRY=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_name)
-    export CONTAINER_REGISTRY
-
     password=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_password)
-
-    CONTAINER_REGISTRY_AUTH=$(echo -n "$login:$password" | base64)
+    user=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_login)
+    CONTAINER_REGISTRY_AUTH=$(echo -n "$user:$password" | base64)
     export CONTAINER_REGISTRY_AUTH
+    echo "export CONTAINER_REGISTRY_AUTH=\"$CONTAINER_REGISTRY_AUTH\"" >> /root/.bashrc
 
     # Inject the registry credentials into the coreos configuration
     wget -q -O registry.fcc.template \
