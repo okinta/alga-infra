@@ -12,7 +12,7 @@ storage:
             }
           }
 
-    - path: /run/containers/auth
+    - path: /etc/containers/auth
       mode: 0644
       contents:
         inline: |
