@@ -1,7 +1,19 @@
 storage:
   files:
     - path: /run/containers/0/auth.json
-      mode: 0600
+      mode: 0644
+      contents:
+        inline: |
+          {
+            "auths": {
+              "$CONTAINER_REGISTRY": {
+                "auth": "$CONTAINER_REGISTRY_AUTH"
+              }
+            }
+          }
+
+    - path: /etc/containerauth
+      mode: 0644
       contents:
         inline: |
           {
