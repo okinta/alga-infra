@@ -34,11 +34,13 @@ Write-Log "Configured private network"
 
     try {
         $apikey = (Invoke-WebRequest -Uri "http://vault.in.okinta.ge:7020/api/kv/vultr_api_key").Content
+        $ingestionKey = (Invoke-WebRequest -Uri "http://vault.in.okinta.ge:7020/api/kv/logdna_ingestion_key").Content
     } catch {
         $apikey = ""
+        $ingestionKey = ""
     }
 }
-until (![string]::IsNullOrEmpty($apikey))
+until (![string]::IsNullOrEmpty($apikey) -and ![string]::IsNullOrEmpty($ingestionKey))
 
 # Set up Vultr-CLI so we can find the tag of this server
 [Environment]::SetEnvironmentVariable("VULTR_API_KEY", $apikey, "User")
@@ -63,6 +65,12 @@ Set-ItemProperty $RegPath "DefaultPassword" -Value $newPassword -type String
 
 # Configure Remote Desktop
 Install-WindowsFeature -Name RDS-RD-Server
+
+# Configure logging
+# https://github.com/chocolatey/choco/wiki/Installation#install-with-powershellexe
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+choco install logdna-agent -y
+logdna-agent -k $ingestionKey
 
 # Install IQFeed if that's what the server is destined for
 if ("iqfeed" -eq $tag) {

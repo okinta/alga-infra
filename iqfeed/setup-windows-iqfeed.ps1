@@ -44,3 +44,7 @@ Invoke-WebRequest -Uri "https://raw.githubusercontent.com/okinta/vultr-scripts/m
 
 # Install the IQFeed service. It should start automatically after reboot
 Start-Process -Wait -FilePath "C:\Program Files (x86)\DTN\IQFeed\iqfeed-service.exe" -ArgumentList "install"
+
+# Forward IQFeed logs to LogDNA
+logdna-agent -d "C:\IQFeed"
+logdna-agent -d "C:\Program Files (x86)\DTN\IQFeed"
