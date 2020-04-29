@@ -43,7 +43,6 @@ systemd:
       contents: |
         [Unit]
         Description=Restore iptables firewall rules
-        Before=iptables-store.service
         Before=network-pre.target
         Wants=network-pre.target
 
