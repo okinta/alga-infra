@@ -46,5 +46,6 @@ Invoke-WebRequest -Uri "https://raw.githubusercontent.com/okinta/vultr-scripts/m
 Start-Process -Wait -FilePath "C:\Program Files (x86)\DTN\IQFeed\iqfeed-service.exe" -ArgumentList "install"
 
 # Forward IQFeed logs to LogDNA
-logdna-agent -d "C:\IQFeed"
+New-Item -ItemType Directory -Force -Path "C:\DTN"
+logdna-agent -d "C:\DTN"
 logdna-agent -d "C:\Program Files (x86)\DTN\IQFeed"
