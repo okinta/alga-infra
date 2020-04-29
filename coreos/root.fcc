@@ -3,5 +3,6 @@ passwd:
     - name: regan
       groups:
         - sudo
+        - systemd-journal
       ssh_authorized_keys:
         - "$SSH_KEY"
