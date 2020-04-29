@@ -48,4 +48,5 @@ Start-Process -Wait -FilePath "C:\Program Files (x86)\DTN\IQFeed\iqfeed-service.
 # Forward IQFeed logs to LogDNA
 New-Item -ItemType Directory -Path "C:\DTN"
 New-Item -ItemType File -Path "C:\DTN" -Name IQConnectLog.txt
+logdna-agent -d "C:\DTN"
 logdna-agent -f "C:\DTN\IQConnectLog.txt"
