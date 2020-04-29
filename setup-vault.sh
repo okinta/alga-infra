@@ -12,5 +12,6 @@ output=$(ssh "$ip" 'bash -s' < ./vault-commands.sh)
 until [[ "$output" == *"key was successfully"* ]]; do
     output=$(ssh "$ip" 'bash -s' < ./vault-commands.sh)
 done
-echo "$output"
+ssh "$ip" 'bash -s' < ./vault-commands.sh
+echo
 echo "Ready"
