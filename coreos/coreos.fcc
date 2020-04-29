@@ -69,7 +69,7 @@ systemd:
         Wants=network-online.target
 
         [Service]
-        TimeoutStartSec=0
+        Restart=on-failure
         ExecStartPre=-/bin/podman kill logdna
         ExecStartPre=-/bin/podman rm logdna
         ExecStartPre=/bin/podman pull okinta/fcos-logdna
