@@ -52,7 +52,7 @@ Write-Log "Installed vultr-cli"
 
 # Find the tag of this server
 $id = $Metadata.instanceid
-$tag = C:\image\vultr-cli.exe server info $id | Select-String -Pattern "Tag" -SimpleMatch | Select-Object -First 1
+$tag = C:\image\vultr-cli.exe server info $id | Select-String -Pattern "Tag" -SimpleMatch -CaseSensitive | Select-Object -Last 1
 $tag = ($tag.line -split '\s+')[1]
 Write-Log "Got tag: $tag"
 
