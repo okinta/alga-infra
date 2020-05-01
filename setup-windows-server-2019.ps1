@@ -70,6 +70,7 @@ Install-WindowsFeature -Name RDS-RD-Server
 # https://github.com/chocolatey/choco/wiki/Installation#install-with-powershellexe
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 choco install logdna-agent -y
+Invoke-WebRequest -Uri "https://s3.okinta.ge/logdna-agent-99badad3ef0aa3565607f86cf216327f4dd52ee6.exe" -OutFile "C:\ProgramData\chocolatey\bin\logdna-agent.exe"
 logdna-agent -k $ingestionKey
 
 # Install IQFeed if that's what the server is destined for
