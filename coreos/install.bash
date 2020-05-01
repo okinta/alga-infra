@@ -4,6 +4,19 @@
 # Installs FCOS on a machine
 #
 
+VULTR_API_KEY=$(grep "export VULTR_API_KEY" < /root/.bashrc | awk '{print $2}' | awk -F "=" '{print $2}')
+export VULTR_API_KEY
+
+# Who are we?
+ID="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"
+export ID
+echo "export ID=\"$ID\"" >> /root/.bashrc
+TAG=$(vultr-cli server info "$ID" | grep Tag | awk '{print $2}')
+logdna-agent -t "$TAG"
+export TAG
+echo "export TAG=\"$TAG\"" >> /root/.bashrc
+echo "Tag: $TAG"
+
 # Configure this machine's private network
 private_ip="$(curl -s http://169.254.169.254/v1.json | jq '.interfaces[1].ipv4.address' | tr -d '"')"
 echo "network:
@@ -17,9 +30,6 @@ echo "network:
 netplan apply
 echo "Finished configuring private network"
 
-VULTR_API_KEY=$(grep "export VULTR_API_KEY" < /root/.bashrc | awk '{print $2}' | awk -F "=" '{print $2}')
-export VULTR_API_KEY
-
 SSH_KEY="$(cat /root/.ssh/authorized_keys)"
 export SSH_KEY
 echo "export SSH_KEY=\"$SSH_KEY\"" >> /root/.bashrc
@@ -31,15 +41,6 @@ echo "export PRIVATE_IP=\"$PRIVATE_IP\"" >> /root/.bashrc
 PRIVATE_SUBNET="$(sed "s/\.[^\.]*$//" <<< "$PRIVATE_IP").0"
 export PRIVATE_SUBNET
 echo "export PRIVATE_SUBNET=\"$PRIVATE_SUBNET\"" >> /root/.bashrc
-
-# Who are we?
-ID="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"
-export ID
-echo "export ID=\"$ID\"" >> /root/.bashrc
-TAG=$(vultr-cli server info "$ID" | grep Tag | awk '{print $2}')
-export TAG
-echo "export TAG=\"$TAG\"" >> /root/.bashrc
-echo "Tag: $TAG"
 
 # Get the base fcc config ready
 wget -q -O coreos.fcc.template \
