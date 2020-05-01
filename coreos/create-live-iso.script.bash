@@ -1,15 +1,33 @@
 #!/usr/bin/env bash
 
-set -e
-
 #
 # Creates an ISO that will automatically call coreos/install.bash upon booting
 #
 
-if [ -z "$1" ]; then
+export VULTR_API_KEY="$1"
+if [ -z "$VULTR_API_KEY" ]; then
     echo "Vultr API key must be provided" >&2
     exit 1
 fi
+
+export LOGDNA_INGESTION_KEY="$2"
+if [ -z "$LOGDNA_INGESTION_KEY" ]; then
+    echo "LogDNA Ingestion Key must be provided" >&2
+    exit 1
+fi
+
+# Forward logs
+echo "deb https://repo.logdna.com stable main" | tee /etc/apt/sources.list.d/logdna.list
+wget -O- https://repo.logdna.com/logdna.gpg | apt-key add -
+apt-get update
+apt-get install -y logdna-agent
+sudo logdna-agent -k $LOGDNA_INGESTION_KEY
+logdna-agent -d /var/log
+logdna-agent -f /tmp/firstboot.log
+logdna-agent -f /tmp/install.log
+logdna-agent -t buildiso
+update-rc.d logdna-agent defaults
+/etc/init.d/logdna-agent start
 
 # Install tools into the ISO that might be used
 #
@@ -33,7 +51,6 @@ wget -q -O /usr/local/bin/yq https://s3.okinta.ge/yq_linux_amd64_3.3.0
 chmod +x /usr/local/bin/yq
 
 # vultr-cli
-export VULTR_API_KEY="$1"
 echo "export VULTR_API_KEY=$1" >> /root/.bashrc
 wget -q -O vultr-cli.tar.gz https://s3.okinta.ge/vultr-cli_0.3.0_linux_64-bit.tar.gz
 tar -xzf vultr-cli.tar.gz -C /usr/local/bin
