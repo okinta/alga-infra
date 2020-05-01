@@ -21,7 +21,7 @@ echo "deb https://repo.logdna.com stable main" | tee /etc/apt/sources.list.d/log
 wget -O- https://repo.logdna.com/logdna.gpg | apt-key add -
 apt update
 apt install -y logdna-agent
-sudo logdna-agent -k $LOGDNA_INGESTION_KEY
+logdna-agent -k "$LOGDNA_INGESTION_KEY"
 logdna-agent -d /var/log
 logdna-agent -f /tmp/firstboot.log
 logdna-agent -f /tmp/install.log
