@@ -50,10 +50,6 @@ function setup_second_boot {
     chmod +x /etc/rc.local
 }
 
-function clear_second_boot {
-    echo "" > /etc/rc.local
-}
-
 function install_tools {
     apt update
     apt install -y \
@@ -142,7 +138,6 @@ if [ $FIRST_BOOT = true ]; then
     reboot
 
 else
-    clear_second_boot
     install_tools
     setup_coreos
     build_iso
