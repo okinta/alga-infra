@@ -27,9 +27,8 @@ function forward_logs {
     apt update
     apt install -y logdna-agent
     logdna-agent -k "$LOGDNA_INGESTION_KEY"
+    logdna-agent -d /tmp
     logdna-agent -d /var/log
-    logdna-agent -f /tmp/firstboot.log
-    logdna-agent -f /tmp/install.log
     logdna-agent -t buildiso
     update-rc.d logdna-agent defaults
     /etc/init.d/logdna-agent start
@@ -46,7 +45,7 @@ function setup_second_boot {
     echo '#!/usr/bin/env bash' > /etc/rc.local
     echo "VULTR_API_KEY=$VULTR_API_KEY" >> /etc/rc.local
     echo "LOGDNA_INGESTION_KEY=$LOGDNA_INGESTION_KEY" >> /etc/rc.local
-    echo 'bash -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/create-live-iso.script.bash)" "" "$VULTR_API_KEY" "$LOGDNA_INGESTION_KEY" "--second-boot" > /tmp/secondboot.log 2>&1' >> /etc/rc.local
+    echo 'bash -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/create-live-iso.script.bash)" "" "$VULTR_API_KEY" "$LOGDNA_INGESTION_KEY" "--second-boot" > /var/log/secondboot.log 2>&1' >> /etc/rc.local
     chmod +x /etc/rc.local
 }
 
@@ -80,7 +79,7 @@ function install_tools {
 function setup_coreos {
     # On boot, run install-coreos.bash
     echo '#!/usr/bin/env bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/install.bash)" > /tmp/install.log 2>&1' > /etc/rc.local
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/install.bash)" > /var/log/install.log 2>&1' > /etc/rc.local
     chmod +x /etc/rc.local
 }
 
