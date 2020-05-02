@@ -133,7 +133,7 @@ function destroy_self {
 
 if [ $FIRST_BOOT = true ]; then
     forward_logs
-    update
+    upgrade
     setup_second_boot
     reboot
 
