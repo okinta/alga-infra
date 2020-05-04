@@ -262,11 +262,21 @@ function upload_iso {
     echo "Started upload"
 
     # Wait until the image has finished uploading
-    sleep 60
-    image_id=$(vultr-cli iso private | grep installcoreos | awk '{print $1}')
-    while [ -z "$image_id" ]; do
+    local wait_for=60
+    local max_timeout=$((wait_for * 10))
+    local runtime=0
+    image_id=""
+
+    until ! [ -z "$image_id" ]; do
+        sleep $wait_for
+        runtime=$((runtime + wait_for))
+
+        if [ $runtime = $max_timeout ]; then
+            echo "Timed out waiting for ISO to upload to Vultr" >&2
+            break
+        fi
+
         image_id=$(vultr-cli iso private | grep installcoreos | awk '{print $1}')
-        sleep 60
     done
 
     rm -rf "/var/www/html/$password"
