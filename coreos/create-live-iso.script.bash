@@ -163,10 +163,13 @@ function upgrade {
 
 function setup_second_boot {
     # On boot, run this script again
-    echo '#!/usr/bin/env bash' > /etc/rc.local
-    echo "VULTR_API_KEY=$VULTR_API_KEY" >> /etc/rc.local
-    echo "LOGDNA_INGESTION_KEY=$LOGDNA_INGESTION_KEY" >> /etc/rc.local
-    echo 'bash -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/create-live-iso.script.bash)" "" "$VULTR_API_KEY" "$LOGDNA_INGESTION_KEY" "--second-boot" > /var/log/secondboot.log 2>&1' >> /etc/rc.local
+    # shellcheck disable=SC2016
+    {
+        echo '#!/usr/bin/env bash';
+        echo "VULTR_API_KEY=$VULTR_API_KEY";
+        echo "LOGDNA_INGESTION_KEY=$LOGDNA_INGESTION_KEY";
+        echo 'bash -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/create-live-iso.script.bash)" "" "$VULTR_API_KEY" "$LOGDNA_INGESTION_KEY" "--second-boot" > /var/log/secondboot.log 2>&1';
+    } > /etc/rc.local
     chmod +x /etc/rc.local
 }
 
@@ -199,6 +202,7 @@ function install_tools {
 
 function setup_coreos {
     # On boot, run install-coreos.bash
+    # shellcheck disable=SC2016
     echo '#!/usr/bin/env bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/install.bash)" > /var/log/install.log 2>&1' > /etc/rc.local
     chmod +x /etc/rc.local
