@@ -274,6 +274,7 @@ function upload_iso {
 
 function destroy_self {
     # Destroy self since our existence no longer serves any purpose
+    local id
     id="$(curl -s http://169.254.169.254/v1.json | jq ".instanceid" | tr -d '"')"
     vultr-cli server delete "$id"
 }
