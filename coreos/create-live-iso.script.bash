@@ -165,10 +165,17 @@ function setup_second_boot {
     # On boot, run this script again
     # shellcheck disable=SC2016
     {
-        echo '#!/usr/bin/env bash';
-        echo "VULTR_API_KEY=$VULTR_API_KEY";
-        echo "LOGDNA_INGESTION_KEY=$LOGDNA_INGESTION_KEY";
-        echo 'bash -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/create-live-iso.script.bash)" "" "$VULTR_API_KEY" "$LOGDNA_INGESTION_KEY" "--second-boot" > /var/log/secondboot.log 2>&1';
+        echo '#!/usr/bin/env bash'
+        echo "VULTR_API_KEY=$VULTR_API_KEY"
+        echo "LOGDNA_INGESTION_KEY=$LOGDNA_INGESTION_KEY"
+        echo -n 'bash -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/create-live-iso.script.bash)" ""'
+        echo -n " '$_arg_vultr_api_key'"
+        echo -n " '$_arg_cloudflare_email'"
+        echo -n " '$_arg_cloudflare_api_key'"
+        echo -n " '$_arg_cloudflare_zonename'"
+        echo -n " '$_arg_cloudflare_recordname'"
+        echo -n " --second-phase"
+        echo ' > /var/log/secondboot.log 2>&1'
     } > /etc/rc.local
     chmod +x /etc/rc.local
 }
@@ -293,9 +300,11 @@ if [ $_arg_second_phase = off ]; then
     forward_logs
     upgrade
     setup_second_boot
+    echo "Update complete. Rebooting"
     reboot
 
 else
+    echo "Running second phase"
     install_tools
     setup_coreos
     build_iso
