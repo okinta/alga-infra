@@ -244,7 +244,10 @@ function upload_iso {
     # Host the ISO file so Vultr can download it
     apt install -y nginx
     ufw allow "Nginx HTTPS"
-    mv /tmp/linux-x86_64.iso /var/www/html/installcoreos.iso
+    local password
+    password=$(openssl rand 9999 | sha256sum | awk '{print $1}')
+    mkdir "/var/www/html/$password"
+    mv /tmp/linux-x86_64.iso "/var/www/html/$password/installcoreos.iso"
 
     # Delete the old ISO if it exists
     local image_id
@@ -255,7 +258,7 @@ function upload_iso {
 
     # Tell Vultr to download the ISO
     local url="$_arg_cloudflare_recordname.$_arg_cloudflare_zonename"
-    vultr-cli iso create --url "https://$url/installcoreos.iso"
+    vultr-cli iso create --url "https://$url/$password/installcoreos.iso"
     echo "Started upload"
 
     # Wait until the image has finished uploading
@@ -265,6 +268,8 @@ function upload_iso {
         image_id=$(vultr-cli iso private | grep installcoreos | awk '{print $1}')
         sleep 60
     done
+
+    rm -rf "/var/www/html/$password"
 }
 
 function destroy_self {
