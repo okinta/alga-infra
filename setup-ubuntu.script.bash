@@ -7,6 +7,7 @@ set -e
 #
 
 # Configure this machine's private network
+apt update
 apt install -y jq
 private_ip="$(curl -s http://169.254.169.254/v1.json | jq '.interfaces[1].ipv4.address' | tr -d '"')"
 echo "network:
