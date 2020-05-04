@@ -9,8 +9,8 @@
 # ARG_POSITIONAL_SINGLE([vultr-api-key],[The Vultr API key to use for communicating with Vultr],[])
 # ARG_POSITIONAL_SINGLE([cloudflare-email],[The email to use for updating Cloudflare DNS],[])
 # ARG_POSITIONAL_SINGLE([cloudflare-api-key],[The API key to use for updating Cloudflare DNS],[])
-# ARG_POSITIONAL_SINGLE([cloudflare-zonename],[The Cloudflare zone to host the ISO],[])
-# ARG_POSITIONAL_SINGLE([cloudflare-recordname],[The Cloudflare record name to host the ISO],[])
+# ARG_POSITIONAL_SINGLE([domain],[The domain that will host the ISO],[])
+# ARG_POSITIONAL_SINGLE([name],[The domain record name that will host the ISO],[])
 # ARG_DEFAULTS_POS()
 # ARG_HELP([Builds an ISO that can be used to install Fedora CoreOS])
 # ARGBASH_GO()
@@ -43,8 +43,8 @@ _positionals=()
 _arg_vultr_api_key=
 _arg_cloudflare_email=
 _arg_cloudflare_api_key=
-_arg_cloudflare_zonename=
-_arg_cloudflare_recordname=
+_arg_domain=
+_arg_name=
 # THE DEFAULTS INITIALIZATION - OPTIONALS
 _arg_logdna_ingestion_key=
 _arg_second_phase="off"
@@ -53,12 +53,12 @@ _arg_second_phase="off"
 print_help()
 {
     printf '%s\n' "Builds an ISO that can be used to install Fedora CoreOS"
-    printf 'Usage: %s [--logdna-ingestion-key <arg>] [--(no-)second-phase] [-h|--help] <vultr-api-key> <cloudflare-email> <cloudflare-api-key> <cloudflare-zonename> <cloudflare-recordname>\n' "$0"
+    printf 'Usage: %s [--logdna-ingestion-key <arg>] [--(no-)second-phase] [-h|--help] <vultr-api-key> <cloudflare-email> <cloudflare-api-key> <domain> <name>\n' "$0"
     printf '\t%s\n' "<vultr-api-key>: The Vultr API key to use for communicating with Vultr"
     printf '\t%s\n' "<cloudflare-email>: The email to use for updating Cloudflare DNS"
     printf '\t%s\n' "<cloudflare-api-key>: The API key to use for updating Cloudflare DNS"
-    printf '\t%s\n' "<cloudflare-zonename>: The Cloudflare zone to host the ISO"
-    printf '\t%s\n' "<cloudflare-recordname>: The Cloudflare record name to host the ISO"
+    printf '\t%s\n' "<domain>: The Cloudflare zone to host the ISO"
+    printf '\t%s\n' "<name>: The Cloudflare record name to host the ISO"
     printf '\t%s\n' "--logdna-ingestion-key: The LogDNA Ingestion Key to use to forward logs (no default)"
     printf '\t%s\n' "--second-phase, --no-second-phase: Whether or not this is the second phase for this script (off by default)"
     printf '\t%s\n' "-h, --help: Prints help"
@@ -105,7 +105,7 @@ parse_commandline()
 
 handle_passed_args_count()
 {
-    local _required_args_string="'vultr-api-key', 'cloudflare-email', 'cloudflare-api-key', 'cloudflare-zonename' and 'cloudflare-recordname'"
+    local _required_args_string="'vultr-api-key', 'cloudflare-email', 'cloudflare-api-key', 'domain' and 'name'"
     test "${_positionals_count}" -ge 5 || _PRINT_HELP=yes die "FATAL ERROR: Not enough positional arguments - we require exactly 5 (namely: $_required_args_string), but got only ${_positionals_count}." 1
     test "${_positionals_count}" -le 5 || _PRINT_HELP=yes die "FATAL ERROR: There were spurious positional arguments --- we expect exactly 5 (namely: $_required_args_string), but got ${_positionals_count} (the last one was: '${_last_positional}')." 1
 }
@@ -114,7 +114,7 @@ handle_passed_args_count()
 assign_positional_args()
 {
     local _positional_name _shift_for=$1
-    _positional_names="_arg_vultr_api_key _arg_cloudflare_email _arg_cloudflare_api_key _arg_cloudflare_zonename _arg_cloudflare_recordname "
+    _positional_names="_arg_vultr_api_key _arg_cloudflare_email _arg_cloudflare_api_key _arg_domain _arg_name "
 
     shift "$_shift_for"
     for _positional_name in ${_positional_names}
@@ -172,8 +172,8 @@ function setup_second_boot {
         echo -n " '$_arg_vultr_api_key'"
         echo -n " '$_arg_cloudflare_email'"
         echo -n " '$_arg_cloudflare_api_key'"
-        echo -n " '$_arg_cloudflare_zonename'"
-        echo -n " '$_arg_cloudflare_recordname'"
+        echo -n " '$_arg_domain'"
+        echo -n " '$_arg_name'"
         echo -n " --second-phase"
         echo ' > /var/log/secondboot.log 2>&1'
     } > /etc/rc.local
@@ -205,6 +205,14 @@ function install_tools {
     tar -xzf vultr-cli.tar.gz -C /usr/local/bin
     chmod +x /usr/local/bin/vultr-cli
     rm -f vultr-cli.tar.gz
+
+    # cf-update.sh
+    local cf_version=7390200166fca82ea7d7e51c0fc843698e35a0cc
+    wget -q -O cf-update.zip \
+        "https://s3.okinta.ge/cloudflare-record-updater-$cf_version.zip"
+    unzip -q -d /usr/local/src cf-update.zip
+    rm -f cf-update.zip
+    ln -s "/usr/local/src/cloudflare-record-updater-$cf_version/cf-update.sh" /usr/local/bin
 }
 
 function setup_coreos {
@@ -235,18 +243,12 @@ function upload_iso {
     external_ip=$(ifconfig ens3 | grep "inet " | awk '{print $2}')
 
     # Update the DNS to point to this server
-    wget -q -O cf-ddns.sh.zip \
-        https://s3.okinta.ge/cf-ddns.sh-3892d9c6607b497331b2cd7ad1f5889131e6d135.zip
-    unzip -q -d /tmp cf-ddns.sh.zip
-    mv /tmp/cf-ddns.sh-3892d9c6607b497331b2cd7ad1f5889131e6d135/cf-ddns.sh /usr/local/bin
-    chmod +x /usr/local/bin/cf-ddns.sh
-    rm -rf /tmp/cf-ddns.sh-* cf-ddns.sh.zip
-    cf-ddns.sh \
-        --email="$_arg_cloudflare_email" \
-        --apikey="$_arg_cloudflare_api_key" \
-        --zonename="$_arg_cloudflare_zonename" \
-        --recordname="$_arg_cloudflare_recordname" \
-        --wan="$external_ip"
+    cf-update.sh \
+        "$_arg_cloudflare_email" \
+        "$_arg_cloudflare_api_key" \
+        "$_arg_domain" \
+        "$_arg_name" \
+        "$external_ip"
 
     # Host the ISO file so Vultr can download it
     apt install -y nginx
@@ -264,7 +266,7 @@ function upload_iso {
     fi
 
     # Tell Vultr to download the ISO
-    local url="$_arg_cloudflare_recordname.$_arg_cloudflare_zonename"
+    local url="$_arg_name.$_arg_domain"
     vultr-cli iso create --url "https://$url/$password/installcoreos.iso"
     echo "Started upload"
 
