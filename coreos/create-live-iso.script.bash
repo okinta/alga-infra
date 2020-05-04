@@ -246,7 +246,7 @@ function upload_iso {
         --apikey="$_arg_cloudflare_api_key" \
         --zonename="$_arg_cloudflare_zonename" \
         --recordname="$_arg_cloudflare_recordname" \
-        -wan="$external_ip"
+        --wan="$external_ip"
 
     # Host the ISO file so Vultr can download it
     apt install -y nginx
