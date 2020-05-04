@@ -148,7 +148,7 @@ function forward_logs {
     apt update
     apt install -y logdna-agent
     logdna-agent -k "$_arg_logdna_ingestion_key"
-    logdna-agent -d /tmp
+    logdna-agent -f /tmp/firstboot.log
     logdna-agent -d /var/log
     logdna-agent -t buildiso
     update-rc.d logdna-agent defaults
