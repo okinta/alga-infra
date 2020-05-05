@@ -278,7 +278,7 @@ function upload_iso {
     local runtime=0
     image_id=""
 
-    until ! [ -z "$image_id" ]; do
+    while true; do
         sleep $wait_for
         runtime=$((runtime + wait_for))
 
@@ -288,6 +288,11 @@ function upload_iso {
         fi
 
         image_id=$(vultr-cli iso private | grep installcoreos | awk '{print $1}')
+
+        if [ ! -z "$image_id" ]; then
+            echo "Finished uploading image"
+            break
+        fi
     done
 
     rm -rf "/var/www/html/$password"
