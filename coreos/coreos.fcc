@@ -68,6 +68,7 @@ systemd:
         Wants=network-online.target
 
         [Service]
+        User=logdna
         Restart=on-failure
         ExecStartPre=-/bin/podman kill logdna
         ExecStartPre=-/bin/podman rm logdna
@@ -87,3 +88,7 @@ passwd:
 
       ssh_authorized_keys:
         - "$SSH_KEY"
+
+    - name: logdna
+      groups:
+        - systemd-journal
