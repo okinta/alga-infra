@@ -4,8 +4,17 @@
 # Installs FCOS on a machine
 #
 
-VULTR_API_KEY=$(grep "export VULTR_API_KEY" < /root/.bashrc | awk '{print $2}' | awk -F "=" '{print $2}')
-export VULTR_API_KEY
+function load_var {
+    local name=$1
+    local value
+    value=$(grep "export $name" < /root/.bashrc | awk '{print $2}' | awk -F "=" '{print $2}')
+    eval "$name=${value@Q}"
+    eval "export $name"
+}
+
+load_var CLOUDFLARE_API_KEY
+load_var CLOUDFLARE_EMAIL
+load_var VULTR_API_KEY
 
 # Who are we?
 ID="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"
@@ -80,6 +89,16 @@ fi
 
 if [[ "$TAG" == stack* ]]; then
     echo "Installing $TAG"
+
+    # Update the DNS to point to this server
+    stack=${TAG#stack-}
+    cf-update.sh \
+        "$CLOUDFLARE_EMAIL" \
+        "$CLOUDFLARE_API_KEY" \
+        "okinta.ge" \
+        "$stack.in" \
+        "$private_ip"
+    echo "Updated $1 to point to $private_ip"
 
     wget -q "https://raw.githubusercontent.com/okinta/$TAG/master/coreos.fcc" -O stack.fcc
     yq merge --append coreos.fcc stack.fcc | fcct > coreos.ign

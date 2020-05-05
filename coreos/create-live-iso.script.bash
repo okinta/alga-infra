@@ -207,6 +207,8 @@ function install_tools {
     rm -f vultr-cli.tar.gz
 
     # cf-update.sh
+    echo "export CLOUDFLARE_API_KEY=$_arg_cloudflare_api_key" >> /root/.bashrc
+    echo "export CLOUDFLARE_EMAIL=$_arg_cloudflare_email" >> /root/.bashrc
     local cf_version=7390200166fca82ea7d7e51c0fc843698e35a0cc
     wget -q -O cf-update.zip \
         "https://s3.okinta.ge/cloudflare-record-updater-$cf_version.zip"
