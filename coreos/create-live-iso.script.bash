@@ -287,7 +287,7 @@ function upload_iso {
             break
         fi
 
-        image_id=$(vultr-cli iso private | grep installcoreos | awk '{print $1}')
+        image_id=$(vultr-cli iso private | grep installcoreos | grep -v pending | awk '{print $1}')
 
         if ! [ -z "$image_id" ]; then
             echo "Finished uploading image. ID: $image_id"
