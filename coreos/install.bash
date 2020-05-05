@@ -81,9 +81,8 @@ if [ "$TAG" != "stack-vault" ]; then
     wget -q -O registry.fcc.template \
         https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/registry.fcc
     envsubst < registry.fcc.template > registry.fcc
-    yq merge --append coreos.fcc registry.fcc > coreos.merged.fcc
-    mv coreos.merged.fcc coreos.fcc
-    rm -f registry.fc*
+    yq merge -i --append coreos.fcc registry.fcc
+    rm registry.fcc
     echo "Injected container registry credentials into ignition config"
 fi
 
@@ -111,9 +110,8 @@ elif [ "$TAG" = "fcos" ]; then
         https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/root.fcc
     envsubst < root.fcc.template > root.fcc
 
-    # Replace the user and add a user with root permission
-    yq delete coreos.fcc passwd.users > coreos.nousers.fcc
-    yq merge --append coreos.nousers.fcc root.fcc | fcct > coreos.ign
+    # Give the first defined user sudo access
+    yq write coreos.fcc "passwd.users[0].groups[+]" sudo | fcct > coreos.ign
 
     coreos-installer install /dev/vda -i coreos.ign
 
