@@ -41,10 +41,10 @@ function Update-DNS
     Connect-CFClientAPI -APIToken $cloudflareApiKey -EmailAddress $cloudflareEmailAddress
     Set-CFCurrentZone -Zone $domain
     $record = Get-CFDNSRecord -Name $name
-    $proxied = off
+    $proxied = "off"
 
     if ($record.proxied) {
-        $proxied = on
+        $proxied = "on"
     }
 
     Set-CFDNSRecord `
