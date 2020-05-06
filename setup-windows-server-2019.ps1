@@ -7,13 +7,42 @@ $ErrorActionPreference = "Stop"
 New-Item -ItemType Directory -Force -Path "C:\image"
 $Logfile = "C:\image\installation.txt"
 
-Function Write-Log
+function Write-Log
 {
-   Param ([string]$logstring)
+   param ([string] $logstring)
    Add-content $Logfile -value $logstring
 }
 
 Write-Log "Setting up Windows Server 2019"
+
+
+function UpdateDNS
+{
+    param(
+        [string] $name,
+        [string] $value
+    )
+
+    $cloudflareApiKey = (Invoke-WebRequest `
+        -Uri "http://vault.in.okinta.ge:7020/api/kv/cloudflare_api_key").Content
+    $cloudflareEmailAddress = (Invoke-WebRequest `
+        -Uri "http://vault.in.okinta.ge:7020/api/kv/cloudflare_email").Content
+    $domain = "okinta.ge"
+    $name = "$name.$domain"
+
+    Install-Module -Force pscloudflare
+    Import-Module pscloudflare
+    Connect-CFClientAPI -APIToken $cloudflareApiKey -EmailAddress $cloudflareEmailAddress
+    Set-CFCurrentZone -Zone $domain
+    $record = Get-CFDNSRecord -Name $name
+    Set-CFDNSRecord `
+        -ID $record.id `
+        -RecordType $record.type `
+        -Name $name `
+        -Content $value `
+        -TTL $record.ttl `
+        -Proxied $record.proxied
+}
 
 # Set up Vultr private networking
 $Metadata = (Invoke-WebRequest -Uri "http://169.254.169.254/v1.json").Content | ConvertFrom-Json
@@ -68,9 +97,14 @@ Install-WindowsFeature -Name RDS-RD-Server
 
 # Configure logging
 # https://github.com/chocolatey/choco/wiki/Installation#install-with-powershellexe
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+Set-ExecutionPolicy Bypass -Scope Process -Force
+[System.Net.ServicePointManager]::SecurityProtocol = `
+    [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+iex ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1"))
 choco install logdna-agent -y
-Invoke-WebRequest -Uri "https://s3.okinta.ge/logdna-agent-99badad3ef0aa3565607f86cf216327f4dd52ee6.exe" -OutFile "C:\ProgramData\chocolatey\bin\logdna-agent.exe"
+Invoke-WebRequest -Uri `
+    "https://s3.okinta.ge/logdna-agent-99badad3ef0aa3565607f86cf216327f4dd52ee6.exe" `
+    -OutFile "C:\ProgramData\chocolatey\bin\logdna-agent.exe"
 logdna-agent -k $ingestionKey
 
 # Install IQFeed if that's what the server is destined for
@@ -78,7 +112,10 @@ if ("iqfeed" -eq $tag) {
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/okinta/vultr-scripts/master/iqfeed/setup-windows-iqfeed.ps1" -OutFile "C:\image\setup-windows-iqfeed.ps1"
 
     Write-Log "Installing IQFeed"
-    Start-Process -Wait -FilePath "powershell" -ArgumentList "C:\image\setup-windows-iqfeed.ps1", $ip
+    Start-Process -Wait -FilePath "powershell" `
+        -ArgumentList "C:\image\setup-windows-iqfeed.ps1", $ip
+
+    UpdateDNS "iqfeed.in" $ip
 }
 
 Write-Log "Done"
