@@ -37,6 +37,8 @@ function Update-DNS
     Start-Process -Wait -FilePath powershell -ArgumentList `
         "Install-Module" "-Force" "pscloudflare"
     Import-Module pscloudflare
+    Write-Log "Installed pscloudflare"
+
     Connect-CFClientAPI -APIToken $cloudflareApiKey -EmailAddress $cloudflareEmailAddress
     Set-CFCurrentZone -Zone $domain
     $record = Get-CFDNSRecord -Name $name
