@@ -34,7 +34,7 @@ function Update-DNS
     Start-Process -Wait -FilePath powershell -ArgumentList `
         "Install-PackageProvider", "-Force", "Nuget"
     Start-Process -Wait -FilePath powershell -ArgumentList `
-        "Install-Module" "-Force" "pscloudflare"
+        "Install-Module", "-Force", "pscloudflare"
     Import-Module pscloudflare
     Write-Log "Installed pscloudflare"
 
