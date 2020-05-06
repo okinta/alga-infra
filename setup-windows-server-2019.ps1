@@ -16,7 +16,7 @@ function Write-Log
 Write-Log "Setting up Windows Server 2019"
 
 
-function UpdateDNS
+function Update-DNS
 {
     param(
         [string] $name,
@@ -32,8 +32,10 @@ function UpdateDNS
 
     Write-Log "Updating DNS, pointing $name to $value"
 
-    Install-PackageProvider -Force Nuget
-    Install-Module -Force pscloudflare
+    Start-Process -Wait -FilePath powershell -ArgumentList `
+        "Install-PackageProvider", "-Force", "Nuget"
+    Start-Process -Wait -FilePath powershell -ArgumentList `
+        "Install-Module" "-Force" "pscloudflare"
     Import-Module pscloudflare
     Connect-CFClientAPI -APIToken $cloudflareApiKey -EmailAddress $cloudflareEmailAddress
     Set-CFCurrentZone -Zone $domain
@@ -142,7 +144,7 @@ if ("iqfeed" -eq $tag) {
         -ArgumentList "C:\image\setup-windows-iqfeed.ps1", $ip
 
     Write-Log "IQFeed installation finished"
-    UpdateDNS "iqfeed.in" $ip
+    Update-DNS "iqfeed.in" $ip
 }
 
 Write-Log "Done"
