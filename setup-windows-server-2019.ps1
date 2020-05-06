@@ -30,6 +30,9 @@ function UpdateDNS
     $domain = "okinta.ge"
     $name = "$name.$domain"
 
+    Write-Log "Updating DNS, pointing $name to $value"
+
+    Install-PackageProvider -Force Nuget
     Install-Module -Force pscloudflare
     Import-Module pscloudflare
     Connect-CFClientAPI -APIToken $cloudflareApiKey -EmailAddress $cloudflareEmailAddress
@@ -42,6 +45,8 @@ function UpdateDNS
         -Content $value `
         -TTL $record.ttl `
         -Proxied $record.proxied
+
+    Write-Log "DNS updated"
 }
 
 # Set up Vultr private networking
@@ -136,6 +141,7 @@ if ("iqfeed" -eq $tag) {
     Start-Process -Wait -FilePath "powershell" `
         -ArgumentList "C:\image\setup-windows-iqfeed.ps1", $ip
 
+    Write-Log "IQFeed installation finished"
     UpdateDNS "iqfeed.in" $ip
 }
 
