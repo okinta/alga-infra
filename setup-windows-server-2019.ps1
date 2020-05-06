@@ -64,19 +64,19 @@ Write-Log "Configuring private network for $ip"
 $ethernet1 = (Get-NetAdapter -Name "Ethernet" | Get-NetIPAddress).IPv4Address
 $ethernet2 = (Get-NetAdapter -Name "Ethernet 2" | Get-NetIPAddress).IPv4Address
 
-$adapter = ""
+$privateAdapter = ""
 if ($ethernet1 -eq $externalIP) {
-    $adapter = "Ethernet"
+    $privateAdapter = "Ethernet 2"
 } elseif ($ethernet2 -eq $externalIP) {
-    $adapter = "Ethernet 2"
+    $privateAdapter = "Ethernet"
 } else {
     Write-Log "Cannot find public adapter. Exiting"
     exit
 }
 
-Write-Log "Found public adapter: $adapter"
+Write-Log "Found private adapter: $privateAdapter"
 
-netsh interface ip set address name=$adapter static $ip 255.255.0.0 0.0.0.0 1
+netsh interface ip set address name=$privateAdapter static $ip 255.255.0.0 0.0.0.0 1
 Write-Log "Configured private network"
 
 :DoLoop do {
