@@ -55,7 +55,28 @@ if ([string]::IsNullOrEmpty($ip)) {
 }
 
 Write-Log "Configuring private network for $ip"
-netsh interface ip set address name="Ethernet 2" static $ip 255.255.0.0 0.0.0.0 1
+
+# There should be two adapters defined: Ethernet, and Ethernet 2
+# We need to figure out which one is public and which is private, because they
+# can differ between installations. Find the IP address for each. The private
+# adapter should have a bogus IP, whereas the public adapter should be
+# configured correctly via DHCP and have an IP equal to $externalIP.
+$ethernet1 = (Get-NetAdapter -Name "Ethernet" | Get-NetIPAddress).IPv4Address
+$ethernet2 = (Get-NetAdapter -Name "Ethernet 2" | Get-NetIPAddress).IPv4Address
+
+$adapter = ""
+if ($ethernet1 -eq $externalIP) {
+    $adapter = "Ethernet"
+} elseif ($ethernet2 -eq $externalIP) {
+    $adapter = "Ethernet 2"
+} else {
+    Write-Log "Cannot find public adapter. Exiting"
+    exit
+}
+
+Write-Log "Found public adapter: $adapter"
+
+netsh interface ip set address name=$adapter static $ip 255.255.0.0 0.0.0.0 1
 Write-Log "Configured private network"
 
 :DoLoop do {
