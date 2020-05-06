@@ -149,4 +149,5 @@ if ("iqfeed" -eq $tag) {
 }
 
 Write-Log "Done"
+Start-Sleep -s 10000
 Restart-Computer -Force
