@@ -2,6 +2,8 @@ storage:
   files:
     - path: /etc/containers/auth.json
       mode: 0640
+      group:
+        name: private-registry
       contents:
         inline: |
           {
@@ -17,3 +19,7 @@ storage:
       contents:
         inline: |
           REGISTRY_AUTH_FILE=/etc/containers/auth.json
+
+passwd:
+  groups:
+    - name: private-registry
