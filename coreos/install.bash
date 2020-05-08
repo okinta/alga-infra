@@ -92,16 +92,21 @@ if [[ "$TAG" == stack* ]]; then
 
     # Update the DNS to point to this server
     stack=${TAG#stack-}
-    cf-update.sh \
+    if cf-update.sh \
         "$CLOUDFLARE_EMAIL" \
         "$CLOUDFLARE_API_KEY" \
         "okinta.ge" \
         "$stack.in" \
-        "$private_ip"
-    echo "Updated $stack.in.okinta.ge to point to $private_ip"
+        "$private_ip"; then
+        echo "Updated $stack.in.okinta.ge to point to $private_ip"
+    fi
+
+    wget -q "https://raw.githubusercontent.com/okinta/$TAG/master/coreos.fcc" -O stack.fcc
+    yq merge --append coreos.fcc stack.fcc | fcct > coreos.ign
+    coreos-installer install /dev/vda -i coreos.ign
 
     # Update public DNS
-    if yq read coreos.fcc "passwd.users[*].name" | grep -w public; then
+    if yq read stack.fcc "passwd.users[*].name" | grep -w public; then
         cf-update.sh \
             "$CLOUDFLARE_EMAIL" \
             "$CLOUDFLARE_API_KEY" \
@@ -110,10 +115,6 @@ if [[ "$TAG" == stack* ]]; then
             "$external_ip"
         echo "Updated $stack.okinta.ge to point to $external_ip"
     fi
-
-    wget -q "https://raw.githubusercontent.com/okinta/$TAG/master/coreos.fcc" -O stack.fcc
-    yq merge --append coreos.fcc stack.fcc | fcct > coreos.ign
-    coreos-installer install /dev/vda -i coreos.ign
 
 elif [ "$TAG" = "fcos" ]; then
     echo "Installing default fcos server with root access"
