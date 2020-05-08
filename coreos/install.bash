@@ -27,6 +27,7 @@ echo "export TAG=\"$TAG\"" >> /root/.bashrc
 echo "Tag: $TAG"
 
 # Configure this machine's private network
+external_ip="$(curl -s http://169.254.169.254/v1.json | jq '.interfaces[0].ipv4.address' | tr -d '"')"
 private_ip="$(curl -s http://169.254.169.254/v1.json | jq '.interfaces[1].ipv4.address' | tr -d '"')"
 echo "network:
   version: 2
@@ -97,7 +98,18 @@ if [[ "$TAG" == stack* ]]; then
         "okinta.ge" \
         "$stack.in" \
         "$private_ip"
-    echo "Updated $1 to point to $private_ip"
+    echo "Updated $stack.in.okinta.ge to point to $private_ip"
+
+    # Update public DNS
+    if yq read coreos.fcc "passwd.users[*].name" | grep -w public; then
+        cf-update.sh \
+            "$CLOUDFLARE_EMAIL" \
+            "$CLOUDFLARE_API_KEY" \
+            "okinta.ge" \
+            "$stack" \
+            "$external_ip"
+        echo "Updated $stack.okinta.ge to point to $external_ip"
+    fi
 
     wget -q "https://raw.githubusercontent.com/okinta/$TAG/master/coreos.fcc" -O stack.fcc
     yq merge --append coreos.fcc stack.fcc | fcct > coreos.ign
