@@ -209,14 +209,15 @@ function setup_second_boot {
     # shellcheck disable=SC2016
     {
         echo '#!/usr/bin/env bash'
-        echo "VULTR_API_KEY=$VULTR_API_KEY"
-        echo "LOGDNA_INGESTION_KEY=$LOGDNA_INGESTION_KEY"
         echo -n 'bash -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/create-live-iso.script.bash)" ""'
-        echo -n " '$_arg_vultr_api_key'"
-        echo -n " '$_arg_cloudflare_email'"
-        echo -n " '$_arg_cloudflare_api_key'"
-        echo -n " '$_arg_domain'"
-        echo -n " '$_arg_name'"
+        echo -n " --vultr-api-key '$_arg_vultr_api_key'"
+        echo -n " --cloudflare-email '$_arg_cloudflare_email'"
+        echo -n " --cloudflare-api-key '$_arg_cloudflare_api_key'"
+        echo -n " --domain '$_arg_domain'"
+        echo -n " --name '$_arg_name'"
+        echo -n " --container-registry-name '$_arg_container_registry_name'"
+        echo -n " --container-registry-login '$_arg_container_registry_login'"
+        echo -n " --container-registry-password '$_arg_container_registry_password'"
         echo -n " --second-phase"
         echo ' > /var/log/secondboot.log 2>&1'
     } > /etc/rc.local
@@ -306,7 +307,7 @@ function upload_iso {
     # Delete the old ISO if it exists
     local image_id
     image_id=$(vultr-cli iso private | grep installcoreos | awk '{print $1}')
-    if ! [ -z "$image_id" ]; then
+    if [ -n "$image_id" ]; then
         vultr-cli iso delete "$image_id"
     fi
 
@@ -332,7 +333,7 @@ function upload_iso {
 
         image_id=$(vultr-cli iso private | grep installcoreos | grep -v pending | awk '{print $1}')
 
-        if ! [ -z "$image_id" ]; then
+        if [ -n "$image_id" ]; then
             echo "Finished uploading image. ID: $image_id"
             break
         fi
