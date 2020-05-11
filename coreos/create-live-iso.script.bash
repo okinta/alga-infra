@@ -262,7 +262,7 @@ function install_tools {
 
     # Save container registry details
     local auth
-    auth=$(echo -n "$user:$password" | base64)
+    auth=$(echo -n "$_arg_container_registry_login:$_arg_container_registry_password" | base64)
     echo "export CONTAINER_REGISTRY=\"$_arg_container_registry_name\"" >> /root/.bashrc
     echo "export CONTAINER_REGISTRY_AUTH=\"$auth\"" >> /root/.bashrc
 }

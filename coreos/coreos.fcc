@@ -33,6 +33,30 @@ storage:
           address1=$PRIVATE_IP/24
           method=manual
 
+    # Create a file with container registry information that can only be read
+    # by users in the private-registry group
+    - path: /etc/containers/auth.json
+      mode: 0640
+      group:
+        name: private-registry
+      contents:
+        inline: |
+          {
+            "auths": {
+              "$CONTAINER_REGISTRY": {
+                "auth": "$CONTAINER_REGISTRY_AUTH"
+              }
+            }
+          }
+
+    # Create a file to be loaded by systemd and podman for accessing our
+    # private container registry
+    - path: /etc/containers/auth
+      mode: 0644
+      contents:
+        inline: |
+          REGISTRY_AUTH_FILE=/etc/containers/auth.json
+
 systemd:
   units:
 
@@ -79,6 +103,7 @@ systemd:
 
 passwd:
   users:
+    # The default user
     - name: regan
 
       # Allow viewing of systemd logs to allow diagnosing issues
@@ -87,3 +112,8 @@ passwd:
 
       ssh_authorized_keys:
         - "$SSH_KEY"
+
+  # This group has access to read the private container registry credentials.
+  # Users wanting to access the private registry should be added to this group.
+  groups:
+    - name: private-registry

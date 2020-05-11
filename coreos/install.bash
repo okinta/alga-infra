@@ -57,14 +57,6 @@ wget -q -O coreos.fcc.template \
     https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc
 envsubst < coreos.fcc.template > coreos.fcc
 
-# Inject the registry credentials into the coreos configuration
-wget -q -O registry.fcc.template \
-    https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/registry.fcc
-envsubst < registry.fcc.template > registry.fcc
-yq merge -i --append coreos.fcc registry.fcc
-rm registry.fcc
-echo "Injected container registry credentials into ignition config"
-
 if [[ "$TAG" == stack* ]]; then
     echo "Installing $TAG"
 
