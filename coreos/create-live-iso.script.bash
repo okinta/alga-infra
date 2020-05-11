@@ -261,9 +261,10 @@ function install_tools {
     ln -s "/usr/local/src/cloudflare-record-updater-$cf_version/cf-update.sh" /usr/local/bin
 
     # Save container registry details
-    echo "export CONTAINER_REGISTRY_NAME=$_arg_container_registry_name" >> /root/.bashrc
-    echo "export CONTAINER_REGISTRY_LOGIN=$_arg_container_registry_login" >> /root/.bashrc
-    echo "export CONTAINER_REGISTRY_PASSWORD=$_arg_container_registry_password" >> /root/.bashrc
+    local auth
+    auth=$(echo -n "$user:$password" | base64)
+    echo "export CONTAINER_REGISTRY=\"$_arg_container_registry_name\"" >> /root/.bashrc
+    echo "export CONTAINER_REGISTRY_AUTH=\"$auth\"" >> /root/.bashrc
 }
 
 function setup_coreos {

@@ -57,35 +57,13 @@ wget -q -O coreos.fcc.template \
     https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc
 envsubst < coreos.fcc.template > coreos.fcc
 
-# If we're not establishing the Vault, then load our private registry credentials
-if [ "$TAG" != "stack-vault" ]; then
-
-    # Pull registry credentials from the Vault
-    echo "Loading container registry credentials from Vault"
-
-    CONTAINER_REGISTRY=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_name)
-    export CONTAINER_REGISTRY
-    echo "export CONTAINER_REGISTRY=\"$CONTAINER_REGISTRY\"" >> /root/.bashrc
-
-    if [ -z "$CONTAINER_REGISTRY" ]; then
-        echo "Could not connect to Vault"
-        exit 1
-    fi
-
-    password=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_password)
-    user=$(timeout 5s curl -s http://vault.in.okinta.ge:7020/api/kv/registry_login)
-    CONTAINER_REGISTRY_AUTH=$(echo -n "$user:$password" | base64)
-    export CONTAINER_REGISTRY_AUTH
-    echo "export CONTAINER_REGISTRY_AUTH=\"$CONTAINER_REGISTRY_AUTH\"" >> /root/.bashrc
-
-    # Inject the registry credentials into the coreos configuration
-    wget -q -O registry.fcc.template \
-        https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/registry.fcc
-    envsubst < registry.fcc.template > registry.fcc
-    yq merge -i --append coreos.fcc registry.fcc
-    rm registry.fcc
-    echo "Injected container registry credentials into ignition config"
-fi
+# Inject the registry credentials into the coreos configuration
+wget -q -O registry.fcc.template \
+    https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/registry.fcc
+envsubst < registry.fcc.template > registry.fcc
+yq merge -i --append coreos.fcc registry.fcc
+rm registry.fcc
+echo "Injected container registry credentials into ignition config"
 
 if [[ "$TAG" == stack* ]]; then
     echo "Installing $TAG"
