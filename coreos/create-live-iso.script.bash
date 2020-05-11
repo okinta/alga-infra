@@ -4,14 +4,17 @@
 # Creates an ISO that will automatically call coreos/install.bash upon booting
 #
 
+# ARG_OPTIONAL_SINGLE([cloudflare-api-key],[],[The API key to use for updating Cloudflare DNS])
+# ARG_OPTIONAL_SINGLE([cloudflare-email],[],[The email to use for updating Cloudflare DNS])
+# ARG_OPTIONAL_SINGLE([container-registry-login],[],[The login for the private container registry])
+# ARG_OPTIONAL_SINGLE([container-registry-name],[],[The name of the private container registry])
+# ARG_OPTIONAL_SINGLE([container-registry-password],[],[The password for the private container registry])
+# ARG_OPTIONAL_SINGLE([domain],[],[The domain that will host the ISO])
 # ARG_OPTIONAL_SINGLE([logdna-ingestion-key],[],[The LogDNA Ingestion Key to use to forward logs])
+# ARG_OPTIONAL_SINGLE([name],[],[The domain record name that will host the ISO])
+# ARG_OPTIONAL_SINGLE([vultr-api-key],[],[The Vultr API key to use for communicating with Vultr])
 # ARG_OPTIONAL_BOOLEAN([second-phase],[],[Whether or not this is the second phase for this script])
-# ARG_POSITIONAL_SINGLE([vultr-api-key],[The Vultr API key to use for communicating with Vultr],[])
-# ARG_POSITIONAL_SINGLE([cloudflare-email],[The email to use for updating Cloudflare DNS],[])
-# ARG_POSITIONAL_SINGLE([cloudflare-api-key],[The API key to use for updating Cloudflare DNS],[])
-# ARG_POSITIONAL_SINGLE([domain],[The domain that will host the ISO],[])
-# ARG_POSITIONAL_SINGLE([name],[The domain record name that will host the ISO],[])
-# ARG_DEFAULTS_POS()
+# ARG_DEFAULTS_POS([])
 # ARG_HELP([Builds an ISO that can be used to install Fedora CoreOS])
 # ARGBASH_GO()
 # needed because of Argbash --> m4_ignore([
@@ -38,28 +41,32 @@ begins_with_short_option()
     test "$all_short_options" = "${all_short_options/$first_option/}" && return 1 || return 0
 }
 
-# THE DEFAULTS INITIALIZATION - POSITIONALS
-_positionals=()
-_arg_vultr_api_key=
-_arg_cloudflare_email=
-_arg_cloudflare_api_key=
-_arg_domain=
-_arg_name=
 # THE DEFAULTS INITIALIZATION - OPTIONALS
+_arg_cloudflare_api_key=
+_arg_cloudflare_email=
+_arg_container_registry_login=
+_arg_container_registry_name=
+_arg_container_registry_password=
+_arg_domain=
 _arg_logdna_ingestion_key=
+_arg_name=
+_arg_vultr_api_key=
 _arg_second_phase="off"
 
 
 print_help()
 {
     printf '%s\n' "Builds an ISO that can be used to install Fedora CoreOS"
-    printf 'Usage: %s [--logdna-ingestion-key <arg>] [--(no-)second-phase] [-h|--help] <vultr-api-key> <cloudflare-email> <cloudflare-api-key> <domain> <name>\n' "$0"
-    printf '\t%s\n' "<vultr-api-key>: The Vultr API key to use for communicating with Vultr"
-    printf '\t%s\n' "<cloudflare-email>: The email to use for updating Cloudflare DNS"
-    printf '\t%s\n' "<cloudflare-api-key>: The API key to use for updating Cloudflare DNS"
-    printf '\t%s\n' "<domain>: The Cloudflare zone to host the ISO"
-    printf '\t%s\n' "<name>: The Cloudflare record name to host the ISO"
+    printf 'Usage: %s [--cloudflare-api-key <arg>] [--cloudflare-email <arg>] [--container-registry-login <arg>] [--container-registry-name <arg>] [--container-registry-password <arg>] [--domain <arg>] [--logdna-ingestion-key <arg>] [--name <arg>] [--vultr-api-key <arg>] [--(no-)second-phase] [-h|--help]\n' "$0"
+    printf '\t%s\n' "--cloudflare-api-key: The API key to use for updating Cloudflare DNS (no default)"
+    printf '\t%s\n' "--cloudflare-email: The email to use for updating Cloudflare DNS (no default)"
+    printf '\t%s\n' "--container-registry-login: The login for the private container registry (no default)"
+    printf '\t%s\n' "--container-registry-name: The name of the private container registry (no default)"
+    printf '\t%s\n' "--container-registry-password: The password for the private container registry (no default)"
+    printf '\t%s\n' "--domain: The domain that will host the ISO (no default)"
     printf '\t%s\n' "--logdna-ingestion-key: The LogDNA Ingestion Key to use to forward logs (no default)"
+    printf '\t%s\n' "--name: The domain record name that will host the ISO (no default)"
+    printf '\t%s\n' "--vultr-api-key: The Vultr API key to use for communicating with Vultr (no default)"
     printf '\t%s\n' "--second-phase, --no-second-phase: Whether or not this is the second phase for this script (off by default)"
     printf '\t%s\n' "-h, --help: Prints help"
 }
@@ -67,11 +74,58 @@ print_help()
 
 parse_commandline()
 {
-    _positionals_count=0
     while test $# -gt 0
     do
         _key="$1"
         case "$_key" in
+            --cloudflare-api-key)
+                test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+                _arg_cloudflare_api_key="$2"
+                shift
+                ;;
+            --cloudflare-api-key=*)
+                _arg_cloudflare_api_key="${_key##--cloudflare-api-key=}"
+                ;;
+            --cloudflare-email)
+                test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+                _arg_cloudflare_email="$2"
+                shift
+                ;;
+            --cloudflare-email=*)
+                _arg_cloudflare_email="${_key##--cloudflare-email=}"
+                ;;
+            --container-registry-login)
+                test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+                _arg_container_registry_login="$2"
+                shift
+                ;;
+            --container-registry-login=*)
+                _arg_container_registry_login="${_key##--container-registry-login=}"
+                ;;
+            --container-registry-name)
+                test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+                _arg_container_registry_name="$2"
+                shift
+                ;;
+            --container-registry-name=*)
+                _arg_container_registry_name="${_key##--container-registry-name=}"
+                ;;
+            --container-registry-password)
+                test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+                _arg_container_registry_password="$2"
+                shift
+                ;;
+            --container-registry-password=*)
+                _arg_container_registry_password="${_key##--container-registry-password=}"
+                ;;
+            --domain)
+                test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+                _arg_domain="$2"
+                shift
+                ;;
+            --domain=*)
+                _arg_domain="${_key##--domain=}"
+                ;;
             --logdna-ingestion-key)
                 test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
                 _arg_logdna_ingestion_key="$2"
@@ -79,6 +133,22 @@ parse_commandline()
                 ;;
             --logdna-ingestion-key=*)
                 _arg_logdna_ingestion_key="${_key##--logdna-ingestion-key=}"
+                ;;
+            --name)
+                test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+                _arg_name="$2"
+                shift
+                ;;
+            --name=*)
+                _arg_name="${_key##--name=}"
+                ;;
+            --vultr-api-key)
+                test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+                _arg_vultr_api_key="$2"
+                shift
+                ;;
+            --vultr-api-key=*)
+                _arg_vultr_api_key="${_key##--vultr-api-key=}"
                 ;;
             --no-second-phase|--second-phase)
                 _arg_second_phase="on"
@@ -93,41 +163,14 @@ parse_commandline()
                 exit 0
                 ;;
             *)
-                _last_positional="$1"
-                _positionals+=("$_last_positional")
-                _positionals_count=$((_positionals_count + 1))
+                _PRINT_HELP=yes die "FATAL ERROR: Got an unexpected argument '$1'" 1
                 ;;
         esac
         shift
     done
 }
 
-
-handle_passed_args_count()
-{
-    local _required_args_string="'vultr-api-key', 'cloudflare-email', 'cloudflare-api-key', 'domain' and 'name'"
-    test "${_positionals_count}" -ge 5 || _PRINT_HELP=yes die "FATAL ERROR: Not enough positional arguments - we require exactly 5 (namely: $_required_args_string), but got only ${_positionals_count}." 1
-    test "${_positionals_count}" -le 5 || _PRINT_HELP=yes die "FATAL ERROR: There were spurious positional arguments --- we expect exactly 5 (namely: $_required_args_string), but got ${_positionals_count} (the last one was: '${_last_positional}')." 1
-}
-
-
-assign_positional_args()
-{
-    local _positional_name _shift_for=$1
-    _positional_names="_arg_vultr_api_key _arg_cloudflare_email _arg_cloudflare_api_key _arg_domain _arg_name "
-
-    shift "$_shift_for"
-    for _positional_name in ${_positional_names}
-    do
-        test $# -gt 0 || break
-        eval "$_positional_name=\${1}" || die "Error during argument parsing, possibly an Argbash bug." 1
-        shift
-    done
-}
-
 parse_commandline "$@"
-handle_passed_args_count
-assign_positional_args 1 "${_positionals[@]}"
 
 # OTHER STUFF GENERATED BY Argbash
 
