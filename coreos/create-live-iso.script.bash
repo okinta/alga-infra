@@ -259,6 +259,11 @@ function install_tools {
     unzip -q -d /usr/local/src cf-update.zip
     rm -f cf-update.zip
     ln -s "/usr/local/src/cloudflare-record-updater-$cf_version/cf-update.sh" /usr/local/bin
+
+    # Save container registry details
+    echo "export CONTAINER_REGISTRY_NAME=$_arg_container_registry_name" >> /root/.bashrc
+    echo "export CONTAINER_REGISTRY_LOGIN=$_arg_container_registry_login" >> /root/.bashrc
+    echo "export CONTAINER_REGISTRY_PASSWORD=$_arg_container_registry_password" >> /root/.bashrc
 }
 
 function setup_coreos {
