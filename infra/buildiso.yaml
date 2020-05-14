@@ -3,12 +3,22 @@
 
 platform: vultr
 
+scripts:
+
+  # Script that loads on first boot to build the ISO
+  - name: create-live-iso
+    type: boot
+    content: |
+      #!/usr/bin/env bash
+      bash -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/create-live-iso.script.bash)"
+
 servers:
 
   # The server that builds the ISO. This server deletes itself after the ISO
   # build process is complete.
   - label: isobuilder
     region: New Jersey
+    startup-script: create-live-iso
     os:
       name: Ubuntu 18.04 x64
 
@@ -27,12 +37,3 @@ servers:
       CONTAINER_REGISTRY_PASSWORD: $CONTAINER_REGISTRY_PASSWORD
       LOGDNA_INGESTION_KEY: $LOGDNA_INGESTION_KEY
       VULTR_API_KEY: $VULTR_API_KEY
-
-scripts:
-
-  # Script that loads on first boot to build the ISO
-  - name: create-live-iso
-    type: boot
-    content: |
-      #!/usr/bin/env bash
-      bash -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/create-live-iso.script.bash)"
