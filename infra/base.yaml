@@ -1,4 +1,4 @@
-# This defines the base infrastructure utilized by other services
+# Defines the base infrastructure utilized by other services
 
 platform: vultr
 
@@ -29,3 +29,13 @@ servers:
         # Schedules the setup and tearing down of other pieces of
         # infrastructure
         - stack-algasetup
+
+scripts:
+
+  # A helpful script to load up a play Ubuntu server with a GUI. These servers
+  # are ad-hoc and not critical components to Alga infrastructure.
+  - name: setup-ubuntu
+    type: boot
+    content: |
+      #!/usr/bin/env bash
+      bash -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/setup-ubuntu.script.bash)"
