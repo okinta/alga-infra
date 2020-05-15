@@ -17,6 +17,7 @@ servers:
   # The server that builds the ISO. This server deletes itself after the ISO
   # build process is complete.
   - label: isobuilder
+    firewall: public
     region: New Jersey
     startup-script: create-live-iso
     os:

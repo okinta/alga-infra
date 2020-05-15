@@ -7,6 +7,7 @@ servers:
   # These stacks are required infrastructure and run continuously. They don't
   # utilize many resources and so run on a single machine.
   - label: permanent
+    firewall: public
     private-networking: true
     os:
       iso: installcoreos.iso
@@ -39,3 +40,37 @@ scripts:
     content: |
       #!/usr/bin/env bash
       bash -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/setup-ubuntu.script.bash)"
+
+firewalls:
+
+  # Allow SSH access
+  - name: ssh
+    rules:
+      - ip-type: v4
+        protocol: tcp
+        source: 0.0.0.0/0
+        port: 22
+
+  # Allow RDP access (for Windows)
+  - name: rdp
+    rules:
+      - ip-type: v4
+        protocol: tcp
+        source: 0.0.0.0/0
+        port: 3389
+
+  # Allow public access via Cloudflare
+  - name: public
+    rules:
+
+      # Allow SSH access
+      - ip-type: v4
+        protocol: tcp
+        source: 0.0.0.0/0
+        port: 22
+
+      # Allow Cloudflare to proxy HTTP requests
+      - ip-type: v4
+        protocol: tcp
+        source: cloudflare
+        port: 80
