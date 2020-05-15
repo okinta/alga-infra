@@ -1,0 +1,41 @@
+# Defines the infrastructure to run automated trading
+
+platform: vultr
+
+servers:
+
+  # Feeds data into Alga
+  - label: iqfeed
+    firewall: rdp
+    tag: iqfeed
+    private-networking: true
+    os:
+      iso: server2019.iso
+
+    plan:
+      cpu: 2
+      memory: 4096
+      type: SSD
+
+    region: Chicago
+
+  - label: alga
+    firewall: ssh
+    private-networking: true
+    os:
+      iso: installcoreos.iso
+
+    plan:
+      cpu: 2
+      memory: 4096
+      type: SSD
+
+    region: Chicago
+    userdata:
+      stacks:
+
+        # Broker gateway to send orders to the market
+        - stack-ibgateway
+
+        # Trades, automagically
+        - stack-algatrader
