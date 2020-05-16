@@ -46,16 +46,14 @@ firewalls:
   # Allow SSH access
   - name: ssh
     rules:
-      - ip-type: v4
-        protocol: tcp
+      - protocol: tcp
         source: 0.0.0.0/0
         port: 22
 
   # Allow RDP access (for Windows)
   - name: rdp
     rules:
-      - ip-type: v4
-        protocol: tcp
+      - protocol: tcp
         source: 0.0.0.0/0
         port: 3389
 
@@ -64,13 +62,11 @@ firewalls:
     rules:
 
       # Allow SSH access
-      - ip-type: v4
-        protocol: tcp
+      - protocol: tcp
         source: 0.0.0.0/0
         port: 22
 
       # Allow Cloudflare to proxy HTTP requests
-      - ip-type: v4
-        protocol: tcp
+      - protocol: tcp
         source: cloudflare
         port: 80
