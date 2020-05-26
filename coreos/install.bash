@@ -17,7 +17,7 @@ load_var CLOUDFLARE_EMAIL
 load_var VULTR_API_KEY
 
 # Who are we?
-ID="$(curl -s http://169.254.169.254/v1.json | jq '.instanceid' | tr -d '"')"
+ID="$(curl -s http://169.254.169.254/v1.json | jq -r '.instanceid')"
 export ID
 echo "export ID=\"$ID\"" >> /root/.bashrc
 TAG=$(vultr-cli server info "$ID" | grep Tag | awk '{print $2}')
@@ -27,8 +27,8 @@ echo "export TAG=\"$TAG\"" >> /root/.bashrc
 echo "Tag: $TAG"
 
 # Configure this machine's private network
-external_ip="$(curl -s http://169.254.169.254/v1.json | jq '.interfaces[0].ipv4.address' | tr -d '"')"
-private_ip="$(curl -s http://169.254.169.254/v1.json | jq '.interfaces[1].ipv4.address' | tr -d '"')"
+external_ip="$(curl -s http://169.254.169.254/v1.json | jq -r '.interfaces[0].ipv4.address')"
+private_ip="$(curl -s http://169.254.169.254/v1.json | jq -r '.interfaces[1].ipv4.address')"
 echo "network:
   version: 2
   renderer: networkd
@@ -44,7 +44,7 @@ SSH_KEY="$(cat /root/.ssh/authorized_keys)"
 export SSH_KEY
 echo "export SSH_KEY=\"$SSH_KEY\"" >> /root/.bashrc
 
-PRIVATE_IP="$(curl -s http://169.254.169.254/v1.json | jq '.interfaces[1].ipv4.address' | tr -d '"')"
+PRIVATE_IP="$(curl -s http://169.254.169.254/v1.json | jq -r '.interfaces[1].ipv4.address')"
 export PRIVATE_IP
 echo "export PRIVATE_IP=\"$PRIVATE_IP\"" >> /root/.bashrc
 
@@ -57,11 +57,13 @@ wget -q -O coreos.fcc.template \
     https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc
 envsubst < coreos.fcc.template > coreos.fcc
 
-if [[ "$TAG" == stack* ]]; then
-    echo "Installing $TAG"
+# Configure the stacks
+userdata="$(curl -s http://169.254.169.254/user-data/user-data)"
+stacks="$(echo "$userdata" | jq -r '.stacks | .[]')"
+for stack in $stacks; do
+    echo "Installing $stack"
 
     # Update the DNS to point to this server
-    stack=${TAG#stack-}
     if cf-update.sh \
         "$CLOUDFLARE_EMAIL" \
         "$CLOUDFLARE_API_KEY" \
@@ -71,12 +73,16 @@ if [[ "$TAG" == stack* ]]; then
         echo "Updated $stack.in.okinta.ge to point to $private_ip"
     fi
 
-    wget -q "https://raw.githubusercontent.com/okinta/$TAG/master/coreos.fcc" -O stack.fcc
-    yq merge --append coreos.fcc stack.fcc | fcct > coreos.ign
-    coreos-installer install /dev/vda -i coreos.ign
+    wget -q "https://raw.githubusercontent.com/okinta/$TAG/master/coreos.fcc" -O "$stack.fcc"
+done
 
-    # Update public DNS
-    if yq read stack.fcc "passwd.users[*].name" | grep -w public; then
+# Install CoreOS
+yq merge --append ./*.fcc | fcct > coreos.ign
+coreos-installer install /dev/vda -i coreos.ign
+
+# Update public DNS
+for stack in $stacks; do
+    if yq read "$stack.fcc" "passwd.users[*].name" | grep -w public; then
         cf-update.sh \
             "$CLOUDFLARE_EMAIL" \
             "$CLOUDFLARE_API_KEY" \
@@ -85,23 +91,7 @@ if [[ "$TAG" == stack* ]]; then
             "$external_ip"
         echo "Updated $stack.okinta.ge to point to $external_ip"
     fi
-
-elif [ "$TAG" = "fcos" ]; then
-    echo "Installing default fcos server with root access"
-
-    wget -q -O root.fcc.template \
-        https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/root.fcc
-    envsubst < root.fcc.template > root.fcc
-
-    # Give the first defined user sudo access
-    yq write coreos.fcc "passwd.users[0].groups[+]" sudo | fcct > coreos.ign
-
-    coreos-installer install /dev/vda -i coreos.ign
-
-# If no valid tag is provided, treat this as a test server
-else
-    exit
-fi
+done
 
 # Tell Vultr to eject the ISO. This will cause the server to reboot
 echo "Rebooting"
