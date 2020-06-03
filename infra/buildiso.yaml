@@ -10,7 +10,7 @@ scripts:
     type: boot
     content: |
       #!/usr/bin/env bash
-      bash -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/create-live-iso.script.bash)"
+      bash -c "$(curl -fsSL https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/live-iso-script-loader.sh)"
 
 servers:
 
@@ -32,6 +32,7 @@ servers:
 
     # Pass sensitive information required to build the ISO via userdata
     userdata:
+      CLOUDFLARE_API_KEY: $CLOUDFLARE_API_KEY
       CLOUDFLARE_EMAIL: $CLOUDFLARE_EMAIL
       CLOUDFLARE_RECORDNAME: $CLOUDFLARE_RECORDNAME
       CLOUDFLARE_ZONENAME: $CLOUDFLARE_ZONENAME
