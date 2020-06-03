@@ -2,35 +2,6 @@
 
 platform: vultr
 
-servers:
-
-  # These stacks are required infrastructure and run continuously. They don't
-  # utilize many resources and so run on a single machine.
-  - label: permanent
-    firewall: public
-    private-networking: true
-    os:
-      iso: installcoreos.iso
-
-    plan:
-      cpu: 1
-      memory: 1024
-      type: SSD
-
-    region: Chicago
-    userdata:
-      stacks:
-
-        # Stores all sensitive information
-        - stack-vault
-
-        # Private NuGet server for hosting C# libraries
-        - stack-nuget
-
-        # Schedules the setup and tearing down of other pieces of
-        # infrastructure
-        - stack-algasetup
-
 scripts:
 
   # A helpful script to load up a play Ubuntu server with a GUI. These servers
