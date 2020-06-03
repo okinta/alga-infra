@@ -3,6 +3,22 @@
 
 platform: vultr
 
+firewalls:
+
+  # Allow public access via Cloudflare
+  - name: public
+    rules:
+
+      # Allow SSH access
+      - protocol: tcp
+        source: 0.0.0.0/0
+        port: 22
+
+      # Allow Cloudflare to proxy HTTP requests
+      - protocol: tcp
+        source: cloudflare
+        port: 80
+
 scripts:
 
   # Script that loads on first boot to build the ISO
