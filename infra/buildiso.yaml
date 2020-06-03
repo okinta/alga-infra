@@ -22,6 +22,8 @@ servers:
     startup-script: create-live-iso
     os:
       name: Ubuntu 18.04 x64
+    ssh-keys:
+      - personal
 
     plan:
       cpu: 1

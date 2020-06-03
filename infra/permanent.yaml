@@ -12,6 +12,9 @@ servers:
     os:
       iso: installcoreos.iso
 
+    ssh-keys:
+      - personal
+
     plan:
       cpu: 1
       memory: 1024
