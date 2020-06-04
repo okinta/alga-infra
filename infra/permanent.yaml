@@ -25,8 +25,8 @@ servers:
       stacks:
 
         # Private NuGet server for hosting C# libraries
-        - stack-nuget
+        - nuget
 
         # Schedules the setup and tearing down of other pieces of
         # infrastructure
-        - stack-algasetup
+        - algasetup

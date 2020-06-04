@@ -41,7 +41,7 @@ servers:
       stacks:
 
         # Broker gateway to send orders to the market
-        - stack-ibgateway
+        - ibgateway
 
         # Trades, automagically
-        - stack-algatrader
+        - algatrader

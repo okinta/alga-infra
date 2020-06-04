@@ -79,7 +79,7 @@ for stack in $stacks; do
         echo "Updated $stack.in.okinta.ge to point to $private_ip"
     fi
 
-    wget -q "https://raw.githubusercontent.com/okinta/$stack/master/coreos.fcc" -O "$stack.fcc"
+    wget -q "https://raw.githubusercontent.com/okinta/stack-$stack/master/coreos.fcc" -O "$stack.fcc"
 done
 
 # Install CoreOS
