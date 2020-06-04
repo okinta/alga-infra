@@ -26,7 +26,3 @@ servers:
 
         # Private NuGet server for hosting C# libraries
         - nuget
-
-        # Schedules the setup and tearing down of other pieces of
-        # infrastructure
-        - algasetup
