@@ -60,6 +60,12 @@ envsubst < coreos.fcc.template > coreos.fcc
 # Configure the stacks
 userdata="$(curl -s http://169.254.169.254/user-data/user-data)"
 stacks="$(echo "$userdata" | jq -r '.stacks | .[]')"
+
+if [ ${#stacks[@]} -eq 0 ]; then
+    echo "No stacks provided. Done"
+    exit
+fi
+
 for stack in $stacks; do
     echo "Installing $stack"
 
