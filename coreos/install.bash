@@ -20,7 +20,7 @@ load_var VULTR_API_KEY
 ID="$(curl -s http://169.254.169.254/v1.json | jq -r '.instanceid')"
 export ID
 echo "export ID=\"$ID\"" >> /root/.bashrc
-TAG=$(vultr-cli server info "$ID" | grep Tag | awk '{print $2}')
+TAG=$(vultr-cli server info "$ID" | grep Label | awk '{print $2}')
 logdna-agent -t "$TAG"
 export TAG
 echo "export TAG=\"$TAG\"" >> /root/.bashrc
