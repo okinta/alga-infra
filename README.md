@@ -37,7 +37,7 @@ It makes use of [agrix](https://github.com/okinta/agrix) for provisioning.
     agrix provision infra/base.yaml
     envsubst < infra/buildiso.yaml | agrix provision
     ./setup-vault.sh
-    envsubst < infra/permanent.yaml | agrix provision
+    agrix provision infra/permanent.yaml
 
 #### Giving Root Access to Server
 

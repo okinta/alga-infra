@@ -20,7 +20,7 @@ function wait {
 }
 
 echo "Starting server; waiting for it to come online"
-output=$(envsubst < infra/vault.yaml | agrix provision 2>&1 | tee /dev/tty)
+output=$(agrix provision infra/vault.yaml 2>&1 | tee /dev/tty)
 id=$(grep "Provisioned server with ID" <<< "$output" | awk '{print $NF}')
 
 # Find the IP of the new server
