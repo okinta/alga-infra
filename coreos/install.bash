@@ -61,7 +61,7 @@ envsubst < coreos.fcc.template > coreos.fcc
 userdata="$(curl -s http://169.254.169.254/user-data/user-data)"
 stacks="$(echo "$userdata" | jq -r '.stacks | .[]')"
 
-if [ ${#stacks[@]} -eq 0 ]; then
+if [ -z "$stacks" ]; then
     echo "No stacks provided. Done"
     exit
 fi
