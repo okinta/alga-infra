@@ -53,12 +53,17 @@ export PRIVATE_SUBNET
 echo "export PRIVATE_SUBNET=\"$PRIVATE_SUBNET\"" >> /root/.bashrc
 
 # Get the base fcc config ready
+userdata="$(curl -s http://169.254.169.254/user-data/user-data)"
 wget -q -O coreos.fcc.template \
     https://raw.githubusercontent.com/okinta/vultr-scripts/master/coreos/coreos.fcc
 envsubst < coreos.fcc.template > coreos.fcc
 
+# Enable root access if set
+if [ "$(echo "$userdata" | jq -r '.root')" = true ]; then
+    yq write -i coreos.fcc 'passwd.users[0].groups[+]' sudo
+fi
+
 # Configure the stacks
-userdata="$(curl -s http://169.254.169.254/user-data/user-data)"
 stacks="$(echo "$userdata" | jq -r '.stacks | .[]')"
 
 if [ -z "$stacks" ]; then
