@@ -1,0 +1,26 @@
+# Defines a server that stores all sensitive information
+
+platform: vultr
+
+servers:
+
+  - label: vault
+    firewall: ssh
+    private-networking: true
+    os:
+      iso: installcoreos.iso
+
+    ssh-keys:
+      - personal
+
+    plan:
+      cpu: 1
+      memory: 1024
+      type: SSD
+
+    region: New Jersey
+    userdata:
+      stacks:
+
+        # Stores all sensitive information
+        - stack-vault

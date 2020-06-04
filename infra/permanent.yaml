@@ -20,12 +20,9 @@ servers:
       memory: 1024
       type: SSD
 
-    region: Chicago
+    region: New Jersey
     userdata:
       stacks:
-
-        # Stores all sensitive information
-        - stack-vault
 
         # Private NuGet server for hosting C# libraries
         - stack-nuget
