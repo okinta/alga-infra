@@ -26,3 +26,6 @@ servers:
 
         # Private NuGet server for hosting C# libraries
         - nuget
+
+        # Keeps the IQFeed server alive to prevent restarting
+        - iqfeed-keep-alive
