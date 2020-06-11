@@ -29,3 +29,6 @@ servers:
 
         # Keeps the IQFeed server alive to prevent restarting
         - iqfeed-keep-alive
+
+        # Monitors the health of IB gateway
+        - ibgateway-health-checker
