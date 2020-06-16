@@ -232,7 +232,8 @@ function install_tools {
         unzip
 
     # coreos-installer
-    wget -q -O /usr/local/bin/coreos-installer https://s3.okinta.ge/coreos-installer-ubuntu-0.1.3
+    wget -q -O /usr/local/bin/coreos-installer \
+        https://s3.okinta.ge/coreos-installer-ubuntu-0.2.1
     chmod +x /usr/local/bin/coreos-installer
 
     # fcct
