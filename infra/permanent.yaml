@@ -27,6 +27,9 @@ servers:
         # Private NuGet server for hosting C# libraries
         - nuget
 
+        # Sets up alga services on a daily basis
+        - algasetup
+
         # Keeps the IQFeed server alive to prevent restarting
         - iqfeed-keep-alive
 
