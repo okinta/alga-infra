@@ -20,10 +20,12 @@ servers:
       memory: 4096
       type: SSD
 
-    region: Chicago
+    region: New Jersey
 
+  # Machine that runs alga
   - label: alga
     firewall: ssh
+    tag: alga
     private-networking: true
     os:
       iso: installcoreos.iso
@@ -36,12 +38,9 @@ servers:
       memory: 4096
       type: SSD
 
-    region: Chicago
+    region: New Jersey
     userdata:
       stacks:
 
         # Broker gateway to send orders to the market
         - ibgateway
-
-        # Trades, automagically
-        - algatrader
