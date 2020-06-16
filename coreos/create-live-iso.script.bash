@@ -232,10 +232,8 @@ function install_tools {
         unzip
 
     # coreos-installer
-    apt install -y cargo \
-        libssl-dev \
-        pkg-config
-    cargo install coreos-installer
+    wget -q -O /usr/local/bin/coreos-installer https://s3.okinta.ge/coreos-installer-ubuntu-0.1.3
+    chmod +x /usr/local/bin/coreos-installer
 
     # fcct
     wget -q -O /usr/local/bin/fcct https://s3.okinta.ge/fcct-x86_64-unknown-linux-gnu-0.5.0
