@@ -44,3 +44,6 @@ servers:
 
         # Broker gateway to send orders to the market
         - ibgateway
+
+        # Trades, automagically
+        - algatrader
