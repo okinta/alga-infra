@@ -14,6 +14,8 @@ function load_var {
 
 load_var CLOUDFLARE_API_KEY
 load_var CLOUDFLARE_EMAIL
+load_var CONTAINER_REGISTRY
+load_var CONTAINER_REGISTRY_AUTH
 load_var VULTR_API_KEY
 
 # Who are we?
