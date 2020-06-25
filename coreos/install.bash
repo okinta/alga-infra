@@ -7,9 +7,8 @@
 function load_var {
     local name=$1
     local value
-    value=$(grep "export $name" < /root/.bashrc | awk '{print $2}' | awk -F "=" '{print $2}')
-    eval "$name=${value@Q}"
-    eval "export $name"
+    value=$(grep "export $name=" < /root/.bashrc | awk '{print $2}' | awk -F "=" '{print $2}')
+    eval "export $name=$(echo "$value")"
 }
 
 load_var CLOUDFLARE_API_KEY
