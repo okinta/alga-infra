@@ -12,9 +12,6 @@ servers:
     os:
       iso: server2019.iso
 
-    ssh-keys:
-      - personal
-
     plan:
       cpu: 2
       memory: 4096
